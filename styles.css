@@ -463,8 +463,11 @@ body {
   box-shadow: 0 2px 8px rgba(123,95,224,0.08);
   overflow: hidden;
   user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
   cursor: pointer;
   touch-action: none;
+  -webkit-tap-highlight-color: transparent;
 }
 .roller[data-touched="true"] {
   border-color: rgba(123,95,224,0.20);

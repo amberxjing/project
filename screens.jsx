@@ -523,6 +523,7 @@ function Roller({ dim, letter, touched, onInteract }) {
   const ref = useRef(null);
   const touchY = useRef(null);
   const wheelLock = useRef(false);
+  const ignoreClick = useRef(false);
 
   useEffect(() => {
     const el = ref.current;if (!el) return;
@@ -537,7 +538,10 @@ function Roller({ dim, letter, touched, onInteract }) {
     return () => el.removeEventListener('wheel', onWheel);
   });
 
-  const onTouchStart = (e) => {touchY.current = e.touches[0].clientY;};
+  const onTouchStart = (e) => {
+    touchY.current = e.touches[0].clientY;
+    ignoreClick.current = true;
+  };
   const onTouchEnd = (e) => {
     if (touchY.current == null) return;
     const dy = e.changedTouches[0].clientY - touchY.current;
@@ -545,12 +549,19 @@ function Roller({ dim, letter, touched, onInteract }) {
     onInteract(0);
     touchY.current = null;
   };
+  const onClick = () => {
+    if (ignoreClick.current) {
+      ignoreClick.current = false;
+      return;
+    }
+    onInteract(0);
+  };
 
   return (
     <div>
-      <div ref={ref} className="roller press"
+      <div ref={ref} className="roller"
       data-touched={touched ? 'true' : 'false'}
-      onClick={() => onInteract(0)}
+      onClick={onClick}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}>
 
