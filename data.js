@@ -1,4 +1,6 @@
 // MBTI 创作人格数据
+const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
+
 window.MBTI_DIMENSIONS = [
   {
     key: 'EI',
@@ -98,10 +100,10 @@ window.QUIZ_QUESTIONS = [
 ];
 
 window.PLATFORMS = [
-  { id: '小红书', name: '小红书', icon: 'assets/platform-xhs.png',       tint: '#FFE3E3', accent: '#FF4D6D' },
-  { id: '朋友圈', name: '朋友圈', icon: 'assets/platform-pyq.png',       tint: '#E2F4E2', accent: '#3FA467' },
-  { id: '抖音',   name: '抖音',   icon: 'assets/platform-douyin.png',    tint: '#1A1A1A', accent: '#3F3F46' },
-  { id: 'B站',    name: 'B站',    icon: 'assets/platform-bilibili.png',  tint: '#FCE3EC', accent: '#3DB6F0' },
+  { id: '小红书', name: '小红书', icon: assetPath('assets/platform-xhs.png'),       tint: '#FFE3E3', accent: '#FF4D6D' },
+  { id: '朋友圈', name: '朋友圈', icon: assetPath('assets/platform-pyq.png'),       tint: '#E2F4E2', accent: '#3FA467' },
+  { id: '抖音',   name: '抖音',   icon: assetPath('assets/platform-douyin.png'),    tint: '#1A1A1A', accent: '#3F3F46' },
+  { id: 'B站',    name: 'B站',    icon: assetPath('assets/platform-bilibili.png'),  tint: '#FCE3EC', accent: '#3DB6F0' },
 ];
 
 // 16 MBTI colors: bg (pastel card), accent (dark shade for text/badge), label (MBTI type display color)
