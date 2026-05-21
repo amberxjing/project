@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>30s 解锁你的创作天赋人格</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Lilita+One&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+  <style>
+    /* Phone shell */
+    .stage {
+      width: 100vw; min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 30px 16px;
+      background: #EBEBEB;
+    }
+    .phone {
+      width: 390px; height: 844px;
+      max-width: calc(100vw - 32px);
+      max-height: calc(100vh - 60px);
+      border-radius: 48px;
+      position: relative;
+      overflow: hidden;
+      background: #ECEAEF;
+      box-shadow:
+        0 40px 80px rgba(90, 63, 196, 0.20),
+        0 0 0 10px #1A1530,
+        0 0 0 11px rgba(255,255,255,0.04);
+    }
+    /* dynamic island */
+    .island {
+      position: absolute; top: 11px; left: 50%; transform: translateX(-50%);
+      width: 110px; height: 32px; border-radius: 999px; background: #000; z-index: 100;
+      pointer-events: none;
+    }
+    .boot-fallback {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      box-sizing: border-box;
+      text-align: center;
+      color: #1A1530;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+      font-weight: 700;
+      line-height: 1.7;
+    }
+    .boot-fallback code {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(26, 21, 48, 0.08);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      word-break: break-all;
+    }
+    @media (max-width: 430px) {
+      .stage { padding: 0; }
+      .phone { width:100vw; height:100vh; max-width:100vw; max-height:100vh; border-radius:0; box-shadow:none; }
+      .island { display:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone">
+      <div class="island"></div>
+      <div id="root" style="width:100%; height:100%; position:relative;">
+        <div class="boot-fallback">
+          <div>
+            请通过 Vite 本地服务访问这个页面，不要直接打开 HTML 文件。<br>
+            <code>npm run dev</code><br>
+            <code>http://127.0.0.1:8765/</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/app.jsx"></script>
+</body>
+</html>

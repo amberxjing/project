@@ -1,0 +1,2572 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>30s 解锁创作天赋人格｜H5 活动 Demo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{
+      --bgA:#CFE6FF;
+      --bgB:#F6FBFF;
+      --card: rgba(255,255,255,.78);
+      --card2: rgba(255,255,255,.92);
+      --line: rgba(0,0,0,.08);
+      --text: rgba(12,16,24,.92);
+      --muted: rgba(24,32,48,.68);
+      --muted2: rgba(24,32,48,.52);
+      --brand:#6C7CFF;
+      --brand2:#62C3FF;
+      --hot:#FF6FAE;
+      --gold:#FFDF8A;
+      --shadow: 0 18px 60px rgba(35,52,76,.18);
+      --r28: 28px;
+    }
+    html,body{height:100%; background:#EAF4FF;}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Segoe UI, Roboto, Arial, "Noto Sans", sans-serif;
+      color: var(--text);
+      overflow:hidden;
+    }
+
+    /* ====== Phone Frame (for demo) ====== */
+    .wrap{height:100%; display:flex; align-items:center; justify-content:center; padding:16px;}
+    .phone{
+      width: 430px; max-width: 95vw; height: 920px; max-height: 92vh;
+      border-radius: 36px;
+      background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.55));
+      border: 1px solid rgba(255,255,255,.9);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+      backdrop-filter: blur(10px);
+    }
+    .safe{ padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); height:100%; }
+
+    /* ====== H5 Stage (Aurora) ====== */
+    .stage{
+      position:relative; height:100%;
+      --sat: 150%;
+      --blur: 44px;
+      --alpha1: .78;
+      --alpha2: .56;
+      --hueAmp: 36deg;
+      --driftDur1: 12s;
+      --driftDur2: 16s;
+      --hueDur1: 18s;
+      --hueDur2: 26s;
+      --moveX: 2.8%;
+      --moveY: 3.2%;
+      --scaleMin: 1.02;
+      --scaleMax: 1.07;
+      transition:
+        --bgA 760ms cubic-bezier(.2,.8,.2,1),
+        --bgB 760ms cubic-bezier(.2,.8,.2,1),
+        --c1  760ms cubic-bezier(.2,.8,.2,1),
+        --c2  760ms cubic-bezier(.2,.8,.2,1),
+        --c3  760ms cubic-bezier(.2,.8,.2,1),
+        --c4  760ms cubic-bezier(.2,.8,.2,1),
+        --c5  760ms cubic-bezier(.2,.8,.2,1),
+        --sat 760ms cubic-bezier(.2,.8,.2,1),
+        --p1x 760ms cubic-bezier(.2,.8,.2,1),
+        --p1y 760ms cubic-bezier(.2,.8,.2,1),
+        --p2x 760ms cubic-bezier(.2,.8,.2,1),
+        --p2y 760ms cubic-bezier(.2,.8,.2,1),
+        --p3x 760ms cubic-bezier(.2,.8,.2,1),
+        --p3y 760ms cubic-bezier(.2,.8,.2,1),
+        --p4x 760ms cubic-bezier(.2,.8,.2,1),
+        --p4y 760ms cubic-bezier(.2,.8,.2,1),
+        --p5x 760ms cubic-bezier(.2,.8,.2,1),
+        --p5y 760ms cubic-bezier(.2,.8,.2,1);
+    }
+    .bg{
+      position:absolute; inset:0;
+      z-index:0;
+      pointer-events:none;
+      background: linear-gradient(180deg, hsla(208, 100%, 77%, 1) 0%, hsla(204, 62%, 97%, 1) 100%);
+    }
+    .bg::before,
+    .bg::after{
+      display: none;
+    }
+    @keyframes drift{
+      0%{
+        transform: translate3d(calc(-1 * var(--moveX)), calc(-1 * var(--moveY)), 0) scale(var(--scaleMin));
+        background-position: 0% 0%;
+      }
+      50%{
+        transform: translate3d(var(--moveX), var(--moveY), 0) scale(1.05);
+        background-position: 88% 34%;
+      }
+      100%{
+        transform: translate3d(calc(-.6 * var(--moveX)), var(--moveY), 0) scale(var(--scaleMax));
+        background-position: 22% 92%;
+      }
+    }
+    @keyframes hue{
+      from { filter: blur(var(--blur)) saturate(var(--sat)) hue-rotate(0deg); }
+      to   { filter: blur(var(--blur)) saturate(var(--sat)) hue-rotate(var(--hueAmp)); }
+    }
+    .switch-pulse{
+      position:absolute; inset:0;
+      z-index:1;
+      pointer-events:none;
+      opacity:0;
+      background:
+        radial-gradient(70% 55% at var(--fx) var(--fy), rgba(var(--c2) / .12), transparent 72%),
+        radial-gradient(60% 50% at calc(var(--fx) + 14%) calc(var(--fy) + 10%), rgba(var(--c3) / .10), transparent 75%);
+    }
+    .switch-pulse.on{ animation: pulse 520ms ease-out 1; }
+    @keyframes pulse{
+      0%   { opacity:0; transform: scale(1); }
+      18%  { opacity:1; transform: scale(1.01); }
+      100% { opacity:0; transform: scale(1.04); }
+    }
+    .grain{
+      position:absolute; inset:0;
+      z-index:2;
+      pointer-events:none;
+      opacity:.08;
+      background-image:
+        radial-gradient(circle at 18% 32%, rgba(0,0,0,.18) 1px, transparent 1.25px),
+        radial-gradient(circle at 72% 22%, rgba(0,0,0,.12) 1px, transparent 1.25px),
+        radial-gradient(circle at 52% 74%, rgba(0,0,0,.10) 1px, transparent 1.25px);
+      background-size: 140px 140px, 190px 190px, 240px 240px;
+      filter: blur(.25px);
+      mix-blend-mode: soft-light;
+    }
+
+    /* Stars */
+    canvas#stars{position:absolute; inset:0; pointer-events:none; opacity:.18; z-index:3;}
+
+    /* ====== Screen slider ====== */
+    .screens{
+      position:absolute; inset:0;
+      will-change: transform;
+      transition: transform .35s cubic-bezier(.2,.9,.2,1);
+      display: flex;
+    }
+    .screen{
+      position:absolute; left:0; top:0; width:100%; height:100%;
+      padding: 18px 16px 18px;
+      display:flex; flex-direction:column;
+      flex-shrink: 0;
+    }
+    .screenContent{ flex:1; display:flex; flex-direction:column; justify-content:center; }
+    .screenContent.reportContent{ justify-content:flex-start; padding-top: 16px; }
+
+    /* ====== UI atoms ====== */
+    .topbar{
+      height: 42px;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      user-select:none;
+    }
+    .iconBtn{
+      width:40px; height:40px; border-radius: 16px;
+      display:flex; align-items:center; justify-content:center;
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(0,0,0,.1);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 12px rgba(0,0,0,.08);
+      cursor:pointer;
+      transition: transform .12s ease, background .18s ease;
+    }
+    .iconBtn:active{ transform: translateY(1px) scale(.99); background: rgba(255,255,255,.85); }
+    .title{
+      font-weight: 950;
+      letter-spacing:.2px;
+      color: rgba(12,16,24,.86);
+      font-size: 14px;
+      opacity: .92;
+    }
+    .chip{
+      display:inline-flex; align-items:center; gap:8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.72);
+      backdrop-filter: blur(10px);
+      font-weight: 900;
+      font-size: 12px;
+      color: rgba(12,16,24,.86);
+      box-shadow: 0 14px 34px rgba(30,40,60,.12);
+    }
+    .chip .dot{
+      width:8px; height:8px; border-radius:999px;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      box-shadow: 0 0 0 4px rgba(124,92,255,.12);
+    }
+
+    .card{
+      border-radius: var(--r28);
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 20px 60px rgba(32,44,66,.12);
+      backdrop-filter: blur(12px);
+    }
+    .cardSoft{
+      border-radius: var(--r28);
+      background: rgba(255,255,255,.65);
+      border: 1px solid rgba(0,0,0,.06);
+      backdrop-filter: blur(12px);
+    }
+
+    .btn{
+      height: 52px;
+      border-radius: 20px;
+      display:flex; align-items:center; justify-content:center;
+      gap: 10px;
+      font-weight: 950;
+      letter-spacing:.2px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.72);
+      color: rgba(12,16,24,.9);
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease, box-shadow .18s ease;
+    }
+    .btn:active{ transform: translateY(1px) scale(.995); }
+    .btn.primary{
+      background: #12151f;
+      border-color: rgba(18,21,31,.18);
+      color: #fff;
+      box-shadow: 0 20px 60px rgba(18,21,31,.22);
+    }
+    .btn.hot{
+      background: linear-gradient(135deg, rgba(255,92,168,.88), rgba(255,223,110,.72));
+      border-color: rgba(255,92,168,.22);
+      box-shadow: 0 20px 60px rgba(255,92,168,.18);
+      color: rgba(10,10,16,.92);
+    }
+    .btn.ghost{
+      background: rgba(255,255,255,.6);
+      border-color: rgba(0,0,0,.08);
+      box-shadow:none;
+    }
+    .btn.small{ height: 44px; border-radius: 18px; font-size: 13px; }
+    .btn[disabled]{
+      opacity:.45;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+
+    .hint{
+      font-size: 12px;
+      color: var(--muted2);
+      line-height: 1.55;
+    }
+    .hintStrong{
+      font-size: 15px;
+      font-weight: 900;
+      color: rgba(12,16,24,.96);
+      letter-spacing:.2px;
+    }
+    .kicker{
+      font-size: 12px; letter-spacing:.14em;
+      text-transform: uppercase;
+      color: rgba(24,32,48,.5);
+      font-weight: 800;
+    }
+    .h1{
+      font-size: 34px;
+      line-height: 1.05;
+      font-weight: 980;
+      letter-spacing:-.02em;
+      color: rgba(12,16,24,.96);
+      text-shadow: 0 22px 60px rgba(80,120,180,.18);
+    }
+    .h2{
+      font-size: 22px;
+      line-height: 1.15;
+      font-weight: 950;
+      color: rgba(12,16,24,.94);
+    }
+    .sub{
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .previewLetter{
+      display:inline-block;
+      min-width: 1ch;
+      color: rgba(12,16,24,.9);
+    }
+    .previewLetter.muted{
+      color: rgba(12,16,24,.35);
+    }
+
+    /* Stickers */
+    .sticker{
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.85);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 8px 22px rgba(40,60,90,.12);
+    }
+    .sticker::before{
+      content: "→";
+      font-weight: 900;
+      font-size: 14px;
+      color: rgba(12,16,24,.86);
+    }
+    .sticker .badge,
+    .sticker span{ display:none; }
+    .pop{ animation: pop .18s ease-out both; }
+    @keyframes pop{ from{ transform: scale(.96); opacity:.4} to{ transform: scale(1); opacity:1} }
+
+    .banner{
+      position:relative;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,.06);
+      background: rgba(255,255,255,.72);
+      overflow:hidden;
+      display:flex; align-items:center;
+      padding: 0 12px;
+    }
+    .bannerTrack{
+      display:flex;
+      flex-direction:column;
+      gap:0;
+      transition: transform .45s ease;
+    }
+    .bannerItem{
+      height: 44px;
+      display:flex; align-items:center;
+      font-weight: 900;
+      font-size: 13px;
+      color: rgba(12,16,24,.92);
+      letter-spacing:.2px;
+      gap:8px;
+    }
+    .bannerTag{
+      display:inline-flex; align-items:center; gap:6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.9);
+      border: 1px solid rgba(0,0,0,.06);
+      font-weight: 900;
+      font-size: 11px;
+      color: rgba(12,16,24,.86);
+      flex: 0 0 auto;
+    }
+    .miniBtn{
+      height: 32px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: #12151f;
+      color: #fff;
+      font-weight: 900;
+      font-size: 12px;
+      border: none;
+      box-shadow: 0 10px 26px rgba(18,21,31,.18);
+    }
+    .ipFloat{
+      width: 150px;
+      height: 150px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    /* Cover (reference screenshot) */
+    .coverHome{ padding-top: 2px; position: relative; }
+    .coverStatus{
+      display:none;
+      align-items:center;
+      justify-content:space-between;
+      padding: 8px 4px 0;
+      font-weight: 900;
+      font-size: 16px;
+      color: rgba(0,0,0,.86);
+      letter-spacing:.2px;
+    }
+    .coverBack{
+      position:absolute;
+      left: 16px;
+      top: 42px;
+      width: 40px;
+      height: 40px;
+      border-radius: 20px;
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(255,255,255,.9);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 10px 24px rgba(0,0,0,.1);
+    }
+    .coverHero{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      margin-top: 28px;
+    }
+    .coverIp{
+      width: 132px;
+      height: 132px;
+      object-fit: contain;
+      margin-top: 4px;
+    }
+    .coverSub{
+      margin-top: 6px;
+      font-size: 12px;
+      color: rgba(0,0,0,.6);
+      line-height: 1.6;
+      font-weight: 700;
+    }
+    .coverSubStrong{
+      margin-top: 4px;
+      font-size: 13px;
+      color: rgba(0,0,0,.75);
+      font-weight: 800;
+    }
+    .bannerCarousel{
+      position: relative;
+      height: 48px;
+      border-radius: 16px;
+      background: rgba(157,202,238,.5);
+      border: none;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      margin: 14px 0;
+    }
+    .carouselTrack{
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      transition: transform .45s cubic-bezier(.2,.9,.2,1);
+      flex: 1;
+    }
+    .carouselItem{
+      height: 48px;
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 13px;
+      color: rgba(12,16,24,.88);
+      line-height: 1.5;
+      white-space: normal;
+      flex: 0 0 auto;
+    }
+    .exampleText{
+      font-weight: 700;
+      font-size: 13px;
+      color: rgba(12,16,24,.85);
+      line-height: 1.5;
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+      padding-right: 85px;
+      flex: 1;
+    }
+    .exampleBtn{
+      position:absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 28px;
+      width: 72px;
+      border-radius: 14px;
+      border: none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size: 12px;
+      font-weight: 800;
+      color: #fff;
+      background: rgba(12,16,24,.88);
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(12,16,24,.16);
+      transition: transform .12s ease, box-shadow .18s ease;
+    }
+    .exampleBtn:active{
+      transform: translateY(calc(-50% + 1px)) scale(.98);
+    }
+    
+    /* Modal overlay */
+    .modalOverlay{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.4);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: flex-end;
+      z-index: 100;
+      animation: fadeIn .25s ease-out;
+    }
+    .modalOverlay.active{
+      display: flex;
+    }
+    @keyframes fadeIn{
+      from{ opacity: 0; } to{ opacity: 1; }
+    }
+    
+    .modalSheet{
+      width: 100%;
+      max-width: 430px;
+      max-height: 70vh;
+      background: #fff;
+      border-radius: 24px 24px 0 0;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp .35s cubic-bezier(.2,.9,.2,1);
+      box-shadow: 0 -8px 40px rgba(0,0,0,.16);
+    }
+    @keyframes slideUp{
+      from{ transform: translateY(100%); } to{ transform: translateY(0); }
+    }
+    
+    .modalHeader{
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 8px 12px 0;
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      position: relative;
+      min-height: 44px;
+    }
+    .modalHandle{
+      width: 32px;
+      height: 4px;
+      background: rgba(0,0,0,.12);
+      border-radius: 2px;
+      margin: 10px auto 0;
+      flex: 1;
+      text-align: center;
+    }
+    .modalClose{
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0,0,0,.06);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: rgba(0,0,0,.72);
+      font-size: 18px;
+      line-height: 1;
+      transition: background .18s ease;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+    .modalClose:active{
+      background: rgba(0,0,0,.12);
+    }
+    
+    .modalContent{
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 0;
+    }
+    
+    /* Banner carousel */
+    .bannerCarousel{
+      position: relative;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(0,0,0,.06);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      margin-bottom: 14px;
+      flex: 1;
+    }
+    .carouselTrack{
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      transition: transform .45s ease;
+    }
+    .carouselItem{
+      height: 48px;
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 13px;
+      color: rgba(12,16,24,.88);
+      line-height: 1.5;
+      white-space: normal;
+      flex: 0 0 auto;
+    }
+    .coverUnlock{
+      margin: 16px auto 14px;
+      background: #eef5fe;
+      color: rgba(20,30,80,.68);
+      font-weight: 800;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      display:flex;
+      align-items:center;
+      justify-content: center;
+      gap:6px;
+      box-shadow: 0 10px 24px rgba(40,60,90,.12);
+      text-align: center;
+      width: fit-content;
+    }
+    .coverOptions{
+      position: relative;
+      height: 279px;
+      width: 333px;
+      margin: 0 auto;
+    }
+    .coverOption{
+      position:absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 20.385px;
+      padding: 18px 16px;
+      height: 112px;
+      width: 326px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border: 2px solid #fff;
+      cursor:pointer;
+      user-select:none;
+    }
+    .coverOption.one{ top: 16px; background:#faf3ff; transform: translateX(-50%) rotate(-2deg); }
+    .coverOption.two{ top: 128px; background:#f7fbde; transform: translateX(-50%) rotate(2deg); }
+    .coverOptionTitle{
+      font-size: 18px;
+      font-weight: 900;
+      color:#111;
+    }
+    .coverOptionSub{
+      margin-top: 4px;
+      font-size: 12px;
+      color: rgba(0,0,0,.7);
+      line-height: 1.6;
+    }
+    .coverTag{
+      position:absolute;
+      top: -2px;
+      right: -2px;
+      width: 64px;
+      height: 26px;
+    }
+    .coverTagText{
+      position:absolute;
+      top: 2px;
+      right: 10px;
+      font-size: 14px;
+      font-weight: 900;
+      color: rgba(244,230,254,.95);
+    }
+    .coverTagText.two{ color: rgba(247,251,222,.95); }
+    .coverNext{
+      width: 32px;
+      height: 32px;
+      border-radius: 16px;
+      background: #000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex: 0 0 auto;
+    }
+    /* Report (figma content) */
+    .reportContent{
+      justify-content:flex-start;
+      overflow:hidden;
+      min-height: 0;
+    }
+    .reportScroll{
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0 120px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .reportHeroCard{
+      background: #000;
+      border-radius: 16px;
+      overflow:hidden;
+      width: 316px;
+      margin: 8px auto 12px;
+    }
+    .reportHeroImage{
+      width: 100%;
+      display:block;
+      border-radius: 16px;
+    }
+    .reportHeroSub{
+      padding: 10px 12px 12px;
+      font-size: 14px;
+      color: rgba(255,255,255,.92);
+      text-align:center;
+      font-weight: 900;
+      line-height: 1.6;
+    }
+    .reportConclusionCard{
+      position: relative;
+      height: 198px;
+      border-radius: 16px;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.5);
+      padding: 12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin: 0 auto 12px;
+    }
+    .reportConclusionBg{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit: cover;
+    }
+    .reportConclusionText{
+      position: relative;
+      text-align:center;
+      color: rgba(0,0,0,.8);
+      line-height: 1.9;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .reportConclusionText .title{
+      color: #9476d9;
+      font-weight: 900;
+      font-size: 18px;
+    }
+    .reportConclusionText .subtitle{
+      font-size: 14px;
+      font-weight: 900;
+      color: rgba(0,0,0,.8);
+    }
+    .reportParagraph{
+      font-size: 14px;
+      color: rgba(0,0,0,.8);
+      line-height: 2;
+    }
+    .reportStrong{
+      font-weight: 900;
+      color: rgba(0,0,0,.9);
+    }
+    .reportDivider{
+      width: 100%;
+      height: 20px;
+      display:block;
+      margin: 10px 0;
+    }
+    .reportSectionTitle{
+      font-size: 18px;
+      font-weight: 900;
+      color: #000;
+      line-height: 1.8;
+    }
+    .reportSubTitle{
+      font-size: 14px;
+      font-weight: 800;
+      color: #000;
+      line-height: 1.8;
+    }
+    .reportImage{
+      width: 316px;
+      border-radius: 16px;
+      display:block;
+    }
+    .reportImageFull{
+      width: 100%;
+      border-radius: 16px;
+      display:block;
+    }
+    .reportImageWrap{
+      width: 316px;
+      border-radius: 16px;
+      overflow:hidden;
+      margin: 0;
+    }
+    .reportImageBg{
+      width: 100%;
+      border-radius: 16px;
+      display:block;
+    }
+    .reportCardDark{
+      width: 316px;
+      border-radius: 16px;
+      background: #294354;
+      overflow:hidden;
+    }
+    .reportCardPurple{
+      width: 100%;
+      border-radius: 16px;
+      background: #4d3575;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 16px 0;
+    }
+    .reportChoiceCard{
+      width: 316px;
+      border-radius: 20px;
+      background: #fbeffb;
+      border: 1px solid rgba(0,0,0,0.15);
+      padding: 16px;
+      margin: 8px auto;
+      position: relative;
+    }
+    .reportChoiceTitle{
+      font-size: 16px;
+      font-weight: 800;
+      color: #000;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    .reportChoiceHint{
+      font-size: 12px;
+      color: rgba(0,0,0,.6);
+      margin-bottom: 10px;
+    }
+    .reportChoiceRow{
+      display:flex;
+      gap: 10px;
+    }
+    .reportChoiceOption{
+      flex:1;
+      border-radius: 12px;
+      padding: 10px;
+      text-align:center;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+    .reportChoiceOption small{
+      display:block;
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      opacity: .6;
+    }
+    .reportChoiceOption.one{
+      background: #fdd5ff;
+      color: #7e0384;
+    }
+    .reportChoiceOption.two{
+      background: #e6cfff;
+      color: #4c0384;
+    }
+    .reportNote{
+      display:inline-block;
+      background: rgba(0,0,0,.1);
+      color: rgba(0,0,0,.5);
+      padding: 10px 14px;
+      border-radius: 24px;
+      font-size: 12px;
+      font-weight: 700;
+      margin: 0 auto;
+    }
+    .reportColumn{
+      width: 316px;
+      margin: 0 auto;
+      display:flex;
+      flex-direction:column;
+      gap: 8px;
+    }
+    .reportScroll ul{
+      padding-left: 20px;
+      margin: 6px 0;
+    }
+    .reportScroll ol{
+      padding-left: 20px;
+      margin: 6px 0;
+    }
+    .reportScroll li{
+      margin: 4px 0;
+    }
+
+    /* Options */
+    .opt{
+      padding: 14px 14px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.14);
+      cursor:pointer;
+      user-select:none;
+      transition: none;
+    }
+    .opt:active{ transform: none; }
+    .opt.selected{
+      background: rgba(255,255,255,.16);
+      border-color: rgba(124,92,255,.40);
+      box-shadow: 0 18px 60px rgba(124,92,255,.16);
+    }
+    /* 禁用首页卡片动效 */
+    .coverOption{
+      transition: none !important;
+    }
+    .coverOption:active{
+      transform: none !important;
+    }
+
+    /* Roller picker */
+    .roller{
+      position:relative;
+      height: 96px;
+      border-radius: 20px;
+      background: rgba(75, 75, 75, 0.08);
+      border: 1px solid rgba(255,255,255,.14);
+      overflow:hidden;
+      user-select:none;
+    }
+    .roller[data-touched="false"] .rollerItem{
+      color: rgba(12,16,24,.35);
+    }
+    .rollerHighlight{
+      position:absolute; left:8px; right:8px; top:32px; height:32px;
+      border-radius: 12px;
+      background: rgba(124,92,255,.18);
+      border: 1px solid rgba(124,92,255,.28);
+      pointer-events:none;
+    }
+    .rollerList{
+      position:absolute; inset:0;
+      display:flex; flex-direction:column; align-items:center;
+      transition: transform .18s ease;
+    }
+    .rollerItem{
+      height:32px; line-height:32px;
+      font-weight: 950;
+      letter-spacing:.2px;
+      color: rgba(16,20,30,.9);
+    }
+    .rollerLabel{
+      font-size: 12px;
+      color: var(--muted2);
+      text-align:center;
+      margin-top: 6px;
+    }
+
+    /* Chat report */
+    .chatStack{ display:flex; flex-direction:column; gap:12px; }
+    .chatBubble{
+      border-radius: 18px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(0,0,0,.06);
+    }
+    .chatBubble.me{
+      align-self:flex-end;
+      background: rgba(108,124,255,.12);
+      border-color: rgba(108,124,255,.24);
+    }
+    .chatBubble.bot{
+      align-self:flex-start;
+      background: rgba(255,255,255,.78);
+    }
+    .llm-line{
+      opacity:0;
+      transform: translateY(6px);
+      transition: opacity .25s ease, transform .25s ease;
+      margin-top: 6px;
+      line-height: 1.6;
+      color: rgba(16,20,30,.86);
+    }
+    .llm-line.show{ opacity:1; transform: translateY(0); }
+    .progressBar{
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.06);
+      overflow:hidden;
+    }
+    .progressFill{
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(78,198,255,.85));
+      transition: width .25s ease;
+    }
+    .inputBar{
+      margin-top: 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.9);
+      border: 1px solid rgba(0,0,0,.08);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      box-shadow: 0 12px 30px rgba(40,60,90,.12);
+    }
+    .inputIcon{
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.08);
+      display:flex; align-items:center; justify-content:center;
+      color: rgba(12,16,24,.7);
+      font-weight: 900;
+    }
+    .inputHint{
+      flex:1;
+      color: rgba(12,16,24,.5);
+      font-weight: 900;
+      font-size: 12px;
+    }
+    .inputMic{
+      width: 34px; height: 34px;
+      border-radius: 999px;
+      background: #12151f;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .quizIp{
+      width: 110px;
+      height: 110px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius: 18px;
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(0,0,0,.06);
+    }
+    .quizIp img{
+      width: 88px;
+      height: 88px;
+      object-fit: contain;
+    }
+    .optionIcon{
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,.08);
+      background: rgba(255,255,255,.9);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color: rgba(12,16,24,.8);
+      flex: 0 0 auto;
+    }
+    .quizFeedback{
+      font-size: 14px;
+      font-weight: 900;
+      color: rgba(12,16,24,.92);
+      letter-spacing:.2px;
+      min-height: 20px;
+    }
+
+    /* Right side dots */
+    .dots{
+      position:absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      display:none;
+      z-index: 30;
+      pointer-events:none;
+    }
+    .dotNav{
+      width: 8px; height: 8px; border-radius: 999px;
+      background: rgba(255,255,255,.22);
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: 0 12px 30px rgba(0,0,0,.16);
+    }
+    .dotNav.active{
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      border-color: rgba(124,92,255,.20);
+      box-shadow: 0 16px 40px rgba(124,92,255,.20);
+      transform: scale(1.1);
+    }
+
+    /* Toast feedback */
+    .toastWrap{
+      position:absolute; left: 16px; right: 16px; bottom: 16px;
+      z-index: 60;
+      pointer-events:none;
+    }
+    .toast{
+      border-radius: 22px;
+      padding: 12px 12px;
+      background: rgba(10,12,18,.55);
+      border: 1px solid rgba(255,255,255,.18);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 24px 70px rgba(0,0,0,.32);
+      display:flex; gap:10px; align-items:flex-start;
+      animation: toastIn .18s ease-out both;
+    }
+    @keyframes toastIn{ from{transform: translateY(10px); opacity:0} to{transform:translateY(0); opacity:1} }
+    .toast .b{
+      width: 34px; height: 34px; border-radius: 16px;
+      display:flex; align-items:center; justify-content:center;
+      background: linear-gradient(135deg, rgba(124,92,255,.35), rgba(78,198,255,.24));
+      border: 1px solid rgba(124,92,255,.24);
+      flex: 0 0 auto;
+      margin-top: 2px;
+      font-weight: 950;
+    }
+    .toast .t{ font-weight: 950; font-size: 13px; color: rgba(255,255,255,.92); }
+    .toast .s{ font-size: 12px; margin-top: 2px; color: rgba(255,255,255,.70); line-height: 1.45; }
+
+    /* Confetti */
+    .confetti{
+      position:absolute; inset:0;
+      pointer-events:none;
+      z-index: 55;
+      overflow:hidden;
+    }
+    .confetti i{
+      position:absolute;
+      width: 10px; height: 10px;
+      border-radius: 3px;
+      opacity: .95;
+      animation: fall 1.1s ease-in forwards;
+    }
+    @keyframes fall{
+      0%{ transform: translateY(-20px) rotate(0deg); opacity:0; }
+      10%{opacity:1;}
+      100%{ transform: translateY(980px) rotate(340deg); opacity:.0;}
+    }
+
+    /* Small helper */
+    .sr{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+    .fadeUp{ animation: fadeUp .22s ease-out both; }
+    @keyframes fadeUp{ from{ transform: translateY(8px); opacity:0} to{ transform: translateY(0); opacity:1} }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="phone">
+      <div class="stage" id="stage">
+        <div class="bg" aria-hidden="true"></div>
+        <div class="switch-pulse" id="pulse" aria-hidden="true"></div>
+        <div class="grain" aria-hidden="true"></div>
+        <canvas id="stars"></canvas>
+
+        <!-- dot nav -->
+        <div class="dots" id="dots"></div>
+
+        <!-- confetti -->
+        <div class="confetti" id="confetti"></div>
+
+        <!-- screens -->
+        <div class="screens" id="screens"></div>
+
+        <!-- toast -->
+        <div class="toastWrap" id="toastWrap"></div>
+        
+        <!-- modal -->
+        <div class="modalOverlay" id="modalOverlay">
+          <div class="modalSheet">
+            <div class="modalHeader">
+              <div class="modalHandle"></div>
+              <button class="modalClose" id="modalClose">✕</button>
+            </div>
+            <div class="modalContent" id="modalContent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const $screens = document.getElementById('screens');
+  const $dots = document.getElementById('dots');
+  const $toastWrap = document.getElementById('toastWrap');
+  const $confetti = document.getElementById('confetti');
+  const $stage = document.getElementById('stage');
+  const $pulse = document.getElementById('pulse');
+  const imgImage394 = "http://localhost:3845/assets/e65d3f016c967672341aeceef1da06f6248b97e1.png";
+  const imgFrame2147224979 = "http://localhost:3845/assets/1bed771516fb8356a1c28eb52acaa55502c4cede.png";
+  const imgImage395 = "http://localhost:3845/assets/b40c95f931a8823c2ab75d607c4344b3b625196b.png";
+  const imgVisualSelection1 = "http://localhost:3845/assets/72cb8b0775bfad3e3b27f91b07c975d698cc2dac.png";
+  const imgImage396 = "http://localhost:3845/assets/827a834316805af925c01d75a4488718b1f73aba.png";
+  const imgVisualSelection41 = "http://localhost:3845/assets/72422bbba391ed7f2e279ba59fd343a5a370bf31.png";
+  const imgFrame2147225027 = "http://localhost:3845/assets/377d7f82f040ef3db630b8d0615ffe891bd327ef.svg";
+
+  const feedbackMapLetter = {
+    I: "你更偏向从独处中获得能量",
+    E: "你容易从互动和环境中被激发灵感",
+    N: "你更关注整体感觉和新想法",
+    S: "你更信任具体细节与可复现的方法",
+    T: "你更倾向用标准与逻辑做判断",
+    F: "你更在意感受与共鸣带来的确定性",
+    J: "你喜欢更可控的节奏与明确计划",
+    P: "你更自由随性，灵感来了就开拍"
+  };
+
+  const quiz = [
+    {
+      id: "Q1",
+      title: "周末的黄金时刻，你更想？",
+      options: [
+        { key: "I", label: "安静地记录属于自己的瞬间", feedback: "原来你更享受和自己相处的创作时刻" },
+        { key: "E", label: "和朋友一起，在热闹的地方拍点什么", feedback: "你会被现场氛围点燃，越拍越有感觉" }
+      ]
+    },
+    {
+      id: "Q2",
+      title: "拍摄时，你更先在意的是？",
+      options: [
+        { key: "S", label: "光线、角度、具体细节", feedback: "你很懂“怎么拍才好看”，细节控更容易出质感" },
+        { key: "N", label: "氛围、故事感、整体 vibe", feedback: "你更在意“感觉对不对”，容易拍出记忆点" }
+      ]
+    },
+    {
+      id: "Q3",
+      title: "朋友问你要不要出去拍点东西，你通常会？",
+      options: [
+        { key: "J", label: "先想好路线和时间", feedback: "你更稳，准备好再拍反而更高效" },
+        { key: "P", label: "看心情，随手抓拍", feedback: "你不太爱被流程限制，随手更容易出惊喜" }
+      ]
+    },
+    {
+      id: "Q4",
+      title: "选照片或剪视频时，你更常说的是？",
+      options: [
+        { key: "T", label: "这张构图 / 曝光有点问题", feedback: "你会用标准帮自己把关，成片更稳定" },
+        { key: "F", label: "这张让我感觉更舒服", feedback: "你很会选“有情绪”的画面，让人愿意看完" }
+      ]
+    },
+    {
+      id: "Q5",
+      title: "你更常把内容发在哪？",
+      options: [
+        { key: "小红书", label: "小红书", feedback: "收到，你更常在小红书发布" },
+        { key: "抖音", label: "抖音", feedback: "收到，你更常在抖音发布" },
+        { key: "朋友圈", label: "朋友圈", feedback: "收到，你更常在朋友圈发布" },
+        { key: "B站", label: "B站", feedback: "收到，你更常在 B 站发布" }
+      ]
+    }
+  ];
+
+  const state = {
+    mode: null,               // 'known' | 'quiz'
+    flow: [0],               // will adjust when mode chosen
+    pos: 0,                   // index in flow
+    knownInput: ['I','N','F','P'],// EI, SN, TF, JP
+    knownTouched: [false,false,false,false],
+    quizIndex: 0,
+    quizAnswers: {},          // Q1..Q5
+    inferredMBTI: 'INFP',
+    platform: '小红书',
+    platformChosen: false,
+    toast: null,
+    reportTimer: null,
+    bannerTimer: null,
+    quizFeedback: "懂你一下",
+    quizFeedbackTimer: null,
+  };
+
+  // ====== Helpers ======
+  const esc = s => String(s ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;");
+
+  function buildKnown(withDots=true){
+    const base = ['I','N','F','P'];
+    return state.knownInput.map((v,i)=> v || (withDots ? '·' : base[i])).join('');
+  }
+
+  function buildKnownHtml(){
+    const base = ['I','N','F','P'];
+    return state.knownInput.map((v,i)=>{
+      const letter = v || base[i];
+      const cls = state.knownTouched[i] ? 'previewLetter' : 'previewLetter muted';
+      return `<span class="${cls}">${letter}</span>`;
+    }).join('');
+  }
+
+  function inferFromKnown(){
+    const base = ['I','N','F','P'];
+    const filled = state.knownInput.map((v,i)=> v || base[i]);
+    state.inferredMBTI = filled.join('');
+  }
+
+  function inferFromQuiz(){
+    const EI = state.quizAnswers.Q1 || 'I';
+    const SN = state.quizAnswers.Q2 || 'N';
+    const JP = state.quizAnswers.Q3 || 'P';
+    const TF = state.quizAnswers.Q4 || 'F';
+    state.platform = state.quizAnswers.Q5 || state.platform || '小红书';
+    state.inferredMBTI = `${EI}${SN}${TF}${JP}`;
+  }
+
+  function oneLine(mbti){
+    const [EI,SN,TF,JP] = mbti.split('');
+    const a = EI==='E' ? '现场感' : '情绪感';
+    const b = SN==='N' ? '新角度' : '细节质感';
+    const c = TF==='T' ? '标准把关' : '共鸣表达';
+    const d = JP==='J' ? '可控节奏' : '随性灵感';
+    return `你更像用「${a} + ${b} + ${c} + ${d}」驱动创作的人。`;
+  }
+
+  function platformTips(platform, mbti){
+    const [EI,SN,TF,JP] = mbti.split('');
+    const tips = [];
+    // platform first
+    if (platform === '小红书'){
+      tips.push("标题先抛观点：一句话说清“你要表达什么”");
+      tips.push("封面更适合“人 + 氛围”，少一点教程味");
+      tips.push("结尾留互动：问一句“你更喜欢哪种？”");
+    } else if (platform === '抖音'){
+      tips.push("前 2 秒给反差：一句话抓住注意力");
+      tips.push("节奏更紧：镜头更短、转场更频繁");
+      tips.push("文案更口语：像在跟朋友说话");
+    } else if (platform === '朋友圈'){
+      tips.push("更适合“真诚记录”：短、轻、带情绪");
+      tips.push("重点是共鸣：一句话感受 + 一张关键图");
+      tips.push("别太用力：自然才会被点赞");
+    } else {
+      tips.push("结构化表达更吃香：开头先讲“你要解决什么”");
+      tips.push("适合做系列：每期一个主题，积累订阅");
+      tips.push("评论区可引导：补充清单/参数/路线");
+    }
+    // personality seasoning (light)
+    if (EI==='I') tips.unshift("你更偏“独处叙事”：用细腻情绪建立风格");
+    if (EI==='E') tips.unshift("你更偏“互动驱动”：用话题和现场感带动观看");
+    if (SN==='N') tips.push("你适合“新角度”：同场景也能拍出不一样的看法");
+    if (SN==='S') tips.push("你适合“细节质感”：用可复现的方法稳定出片");
+    if (TF==='T') tips.push("你适合“标准把关”：清晰结构让你更高效");
+    if (TF==='F') tips.push("你适合“情绪共鸣”：一句话就能让人想看完");
+    if (JP==='J') tips.push("你适合“有计划的拍”：预设 3 个镜头就够了");
+    if (JP==='P') tips.push("你适合“先拍下来”：回头再挑最对味的");
+    return tips.slice(0,5);
+  }
+
+  function reportLines(mbti, platform){
+    const tips = platformTips(platform, mbti);
+    return [
+      `你是 ${mbti}，更像把事做成的执行型创作者。`,
+      "你的优势在于“落地与推进”，不是停在态度表达。",
+      `平台建议：${tips[0] || "先明确一个固定的开场句式。"}`
+    ].concat(tips.slice(1,4).map(t => `具体做法：${t}`));
+  }
+
+  function showToast(title, subtitle, ms=1500){
+    state.toast = {title, subtitle};
+    renderToast();
+    window.clearTimeout(showToast._t);
+    showToast._t = window.setTimeout(()=>{ state.toast=null; renderToast(); }, ms);
+  }
+
+  const THEMES = [
+    {
+      name: "Pastel Aurora",
+      bgA:[247,246,255], bgB:[255,255,255],
+      c1:[168,148,255], c2:[255,140,210], c3:[78,198,255], c4:[255,210,140], c5:[106,76,255],
+      sat:"150%"
+    },
+    {
+      name: "Mint Air",
+      bgA:[242,255,252], bgB:[255,255,255],
+      c1:[120,255,210], c2:[90,230,190], c3:[70,170,255], c4:[255,245,170], c5:[160,210,255],
+      sat:"148%"
+    },
+    {
+      name: "Peach Cream",
+      bgA:[255,248,244], bgB:[255,255,255],
+      c1:[255,176,160], c2:[255,120,160], c3:[140,210,255], c4:[255,230,170], c5:[255,140,220],
+      sat:"150%"
+    },
+    {
+      name: "Sky Wash",
+      bgA:[242,250,255], bgB:[255,255,255],
+      c1:[150,210,255], c2:[90,170,255], c3:[60,230,255], c4:[255,200,230], c5:[120,140,255],
+      sat:"148%"
+    },
+    {
+      name: "Lemon Lilac",
+      bgA:[252,252,245], bgB:[255,255,255],
+      c1:[255,245,170], c2:[180,160,255], c3:[120,220,255], c4:[255,210,140], c5:[255,170,230],
+      sat:"148%"
+    }
+  ];
+
+  const ANCHOR_PRESETS = [
+    [
+      {p1:[14,22], p2:[78,28], p3:[84,78], p4:[32,86], p5:[52,64]},
+      {p1:[18,26], p2:[72,22], p3:[88,74], p4:[28,84], p5:[56,58]},
+      {p1:[12,30], p2:[80,26], p3:[82,82], p4:[36,78], p5:[50,62]},
+    ],
+    [
+      {p1:[20,18], p2:[74,34], p3:[86,70], p4:[26,88], p5:[58,60]},
+      {p1:[16,24], p2:[82,30], p3:[80,76], p4:[30,82], p5:[54,66]},
+      {p1:[22,28], p2:[70,24], p3:[88,80], p4:[34,86], p5:[48,58]},
+    ],
+    [
+      {p1:[10,24], p2:[86,22], p3:[78,82], p4:[38,84], p5:[56,62]},
+      {p1:[18,20], p2:[78,20], p3:[86,84], p4:[32,88], p5:[50,64]},
+      {p1:[14,30], p2:[84,28], p3:[80,74], p4:[40,80], p5:[52,58]},
+    ]
+  ];
+
+  function setVar(name, val){
+    if (!$stage) return;
+    if (Array.isArray(val)) $stage.style.setProperty(name, `${val[0]} ${val[1]} ${val[2]}`);
+    else $stage.style.setProperty(name, val);
+  }
+  function rand(min, max){ return Math.random() * (max - min) + min; }
+  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+  function applyAnchors(anchors){
+    setVar("--p1x", `${anchors.p1[0]}%`); setVar("--p1y", `${anchors.p1[1]}%`);
+    setVar("--p2x", `${anchors.p2[0]}%`); setVar("--p2y", `${anchors.p2[1]}%`);
+    setVar("--p3x", `${anchors.p3[0]}%`); setVar("--p3y", `${anchors.p3[1]}%`);
+    setVar("--p4x", `${anchors.p4[0]}%`); setVar("--p4y", `${anchors.p4[1]}%`);
+    setVar("--p5x", `${anchors.p5[0]}%`); setVar("--p5y", `${anchors.p5[1]}%`);
+  }
+  function chooseAnchors(){
+    const pack = ANCHOR_PRESETS[Math.floor(Math.random() * ANCHOR_PRESETS.length)];
+    const base = pack[Math.floor(Math.random() * pack.length)];
+    const j = 4;
+    return {
+      p1:[clamp(base.p1[0] + rand(-j,j), 6, 94), clamp(base.p1[1] + rand(-j,j), 6, 94)],
+      p2:[clamp(base.p2[0] + rand(-j,j), 6, 94), clamp(base.p2[1] + rand(-j,j), 6, 94)],
+      p3:[clamp(base.p3[0] + rand(-j,j), 6, 94), clamp(base.p3[1] + rand(-j,j), 6, 94)],
+      p4:[clamp(base.p4[0] + rand(-j,j), 6, 94), clamp(base.p4[1] + rand(-j,j), 6, 94)],
+      p5:[clamp(base.p5[0] + rand(-j,j), 6, 94), clamp(base.p5[1] + rand(-j,j), 6, 94)],
+    };
+  }
+  function triggerPulse(){
+    if (!$pulse) return;
+    setVar("--fx", `${rand(20,80)}%`);
+    setVar("--fy", `${rand(20,80)}%`);
+    $pulse.classList.remove("on");
+    void $pulse.offsetWidth;
+    $pulse.classList.add("on");
+  }
+  function setStageTheme(index){
+    const t = THEMES[index % THEMES.length];
+    setVar("--bgA", t.bgA);
+    setVar("--bgB", t.bgB);
+    setVar("--c1", t.c1);
+    setVar("--c2", t.c2);
+    setVar("--c3", t.c3);
+    setVar("--c4", t.c4);
+    setVar("--c5", t.c5);
+    setVar("--sat", t.sat);
+    applyAnchors(chooseAnchors());
+    triggerPulse();
+  }
+
+  function renderToast(){
+    $toastWrap.innerHTML = '';
+    // Toast 功能已禁用
+  }
+
+  function confettiBurst(){
+    // 彩带动效已禁用
+  }
+
+  function setFlowForMode(){
+    if (state.mode === 'known') state.flow = [0,1,3,4];
+    if (state.mode === 'quiz')  state.flow = [0,2,4];
+    state.pos = Math.min(state.pos, state.flow.length-1);
+  }
+
+  function goToFlowPos(p){
+    state.pos = Math.max(0, Math.min(p, state.flow.length-1));
+    updateSlider();
+    renderDots();
+    if (currentScreenId() === 4) {
+      setTimeout(startReportStream, 120);
+    }
+  }
+  function next(){
+    if (state.pos < state.flow.length-1) goToFlowPos(state.pos+1);
+  }
+  function prev(){
+    if (state.pos > 0) goToFlowPos(state.pos-1);
+  }
+
+  function currentScreenId(){ return state.flow[state.pos]; }
+
+  // ====== Screens (0..3) ======
+  function screenCover(){
+    return `
+      <div class="screen" data-screen="0">
+        <div class="screenContent">
+          <div class="fadeUp coverHome">
+            <div class="coverStatus">
+              <div>10:08</div>
+              <img src="http://localhost:3845/assets/0574061619c291d09057512e39360b61c6139e94.svg" alt="" style="height:14px" />
+            </div>
+            <div class="coverBack" aria-hidden="true">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                <path d="M15 18l-6-6 6-6" stroke="rgba(0,0,0,.72)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="kicker">30 seconds</div>
+            <div class="coverHero">
+              <div>
+                <div class="h1">解锁你的<br/>创作天赋人格</div>
+                <div class="coverSub">结合你的人格 × 内容习惯 × 审美倾向</div>
+                <div class="coverSubStrong">告诉你：怎么拍、怎么发、怎么更受喜欢</div>
+              </div>
+              <img class="coverIp" src="image 6.png" alt="IP" />
+            </div>
+
+            <div class="bannerCarousel">
+              <div class="carouselTrack" id="carouselTrack">
+                <div class="carouselItem">你的视频，适合 短而有冲击力，不是铺垫型</div>
+                <div class="carouselItem">创作定位清晰，内容更容易被记住和传播</div>
+                <div class="carouselItem">从内核出发，打造专属于你的创作风格</div>
+              </div>
+              <button class="exampleBtn" type="button" data-act="open-modal">示例报告</button>
+            </div>
+
+            <div class="coverUnlock">解锁 你的完整版 报告 <span style="transform:rotate(90deg)">→</span></div>
+
+            <div class="coverOptions">
+              <div class="coverOption one" data-act="pick-known">
+                <img class="coverTag" src="http://localhost:3845/assets/7930d3555a34ad0a335d72601b35d28bde648c27.svg" alt="" />
+                <div class="coverTagText">方式 1</div>
+                <div>
+                  <div class="coverOptionTitle">输入 MBTI 进行测试</div>
+                  <div class="coverOptionSub">输入你的 MBTI → 输出专属创作天赋报告</div>
+                </div>
+                <div class="coverNext">
+                  <img src="http://localhost:3845/assets/487510187152192cbcf452263b992be214e76f2a.svg" alt="" style="width:14px;height:14px;transform:rotate(180deg) scaleY(-1)" />
+                </div>
+              </div>
+
+              <div class="coverOption two" data-act="pick-quiz">
+                <img class="coverTag" src="http://localhost:3845/assets/28c19dddfbe9d75c2e56875c16f26221849284a6.svg" alt="" />
+                <div class="coverTagText two">方式 2</div>
+                <div>
+                  <div class="coverOptionTitle">不知道自己的 MBTI ？</div>
+                  <div class="coverOptionSub">仅需完成 N个关于拍摄的小选择，就能找到专属的创作人格</div>
+                </div>
+                <div class="coverNext">
+                  <img src="http://localhost:3845/assets/487510187152192cbcf452263b992be214e76f2a.svg" alt="" style="width:14px;height:14px;transform:rotate(180deg) scaleY(-1)" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function screenKnown(){
+    const mbti = buildKnownHtml();
+    const canGenerate = state.knownTouched.every(Boolean);
+    return `
+      <div class="screen" data-screen="1">
+        <div class="topbar">
+          <button class="iconBtn" data-act="prev" aria-label="返回">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18l-6-6 6-6" stroke="rgba(255,255,255,.90)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="title">滚轮选 MBTI</div>
+          <div class="chip"><span class="dot"></span> 2/4</div>
+        </div>
+
+        <div class="screenContent">
+          <div class="fadeUp">
+            <div class="h2">选择你的 MBTI</div>
+            
+
+            <div class="mt-4 card p-4">
+              <div>
+                <div class="kicker">MBTI preview</div>
+                <div id="mbtiPreview" class="text-4xl font-black tracking-[.26em] mt-2" style="text-shadow:0 18px 60px rgba(124,92,255,.22)">
+                  ${mbti}
+                </div>
+                <div class="hint mt-2 hintStrong" id="knownFeedback">点击即可切换字母，选择完成继续下一步。</div>
+              </div>
+
+              <div class="mt-4 grid grid-cols-4 gap-2">
+                ${rollerDim(0,"能量来源",["I","E"])}
+                ${rollerDim(1,"注意力焦点",["N","S"])}
+                ${rollerDim(2,"判断方式",["T","F"])}
+                ${rollerDim(3,"行动节奏",["J","P"])}
+              </div>
+
+              <div class="mt-4 grid grid-cols-2 gap-2">
+                <button class="btn ghost" data-act="known-clear">清空重选</button>
+                <button class="btn primary" data-act="known-next" ${canGenerate ? "" : "disabled"}>下一步</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function screenQuiz(){
+    const q = quiz[state.quizIndex];
+    const step = state.quizIndex + 1;
+    return `
+      <div class="screen" data-screen="2">
+        <div class="topbar">
+          <button class="iconBtn" data-act="prev" aria-label="返回">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18l-6-6 6-6" stroke="rgba(255,255,255,.90)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="title">5 个小选择</div>
+          <div class="chip"><span class="dot"></span> 2/3</div>
+        </div>
+
+        <div class="screenContent">
+          <div class="fadeUp">
+            <div class="mt-4 flex items-center justify-between gap-3 mb-4">
+              ${quizIllustration(step)}
+              <div class="cardSoft p-4 flex-1">
+                <div class="quizFeedback" id="quizFeedbackText">${esc(state.quizFeedback || "懂你一下")}</div>
+              </div>
+            </div>
+
+            <div class="kicker">Question ${step} / 5</div>
+            <div class="h2 mt-2">${esc(q.title)}</div>
+            <div class="sub">选更像你的那个。</div>
+
+            <div class="mt-4 grid gap-3">
+              ${q.options.map(o => `
+                <div class="opt card p-4" data-act="quiz-pick" data-qid="${esc(q.id)}" data-key="${esc(o.key)}">
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="text-base font-black leading-snug">${esc(o.label)}</div>
+                    <div class="optionIcon">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 6l6 6-6 6" stroke="rgba(12,16,24,.8)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function screenPlatform(){
+    const options = [
+      { key: "小红书", label: "小红书" },
+      { key: "抖音", label: "抖音" },
+      { key: "朋友圈", label: "朋友圈" },
+      { key: "B站", label: "B站" },
+    ];
+    const canGenerate = state.platformChosen;
+    return `
+      <div class="screen" data-screen="3">
+        <div class="topbar">
+          <button class="iconBtn" data-act="prev" aria-label="返回">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18l-6-6 6-6" stroke="rgba(255,255,255,.90)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="title">选择常用平台</div>
+          <div class="chip"><span class="dot"></span> 3/4</div>
+        </div>
+
+        <div class="screenContent">
+          <div class="fadeUp">
+            <div class="h2">你更常把内容发在哪？</div>
+            <div class="sub">选一个常用平台即可。</div>
+
+            <div class="mt-4 grid gap-3">
+              ${options.map(o => `
+                <div class="opt card p-4 ${state.platform===o.key && state.platformChosen ? 'selected' : ''}" data-act="platform-pick" data-key="${esc(o.key)}">
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="text-base font-black leading-snug">${esc(o.label)}</div>
+                    <div class="optionIcon">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 6l6 6-6 6" stroke="rgba(12,16,24,.8)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="mt-5 grid grid-cols-2 gap-2">
+              <button class="btn ghost" data-act="prev">上一步</button>
+              <button class="btn primary" data-act="known-generate" ${canGenerate ? "" : "disabled"}>解锁我的创作画像</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function screenReport(){
+    const mbti = state.inferredMBTI || 'INTJ';
+    return `
+      <div class="screen" data-screen="4">
+        <div class="topbar">
+          <button class="iconBtn" data-act="prev" aria-label="返回">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18l-6-6 6-6" stroke="rgba(255,255,255,.90)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="reportTitleBar">会话标题</div>
+          <div style="width:40px"></div>
+        </div>
+
+        <div class="screenContent reportContent">
+          <div class="fadeUp reportScroll">
+            <div class="reportHeroCard">
+              <img class="reportHeroImage" src="${imgImage394}" alt="" />
+              <div class="reportHeroSub">给那些觉得大多数视频都很无脑的 ${esc(mbti)}</div>
+            </div>
+
+            <div class="reportConclusionCard">
+              <img class="reportConclusionBg" src="${imgFrame2147224979}" alt="" />
+              <div class="reportConclusionText">
+                <div class="title">一句话结论</div>
+                <div class="subtitle">你的定位 · 灵感架构师</div>
+                <div>承认吧，你并不想对着镜头大喊大叫，也不想跳那些像被电击了一样的热门舞蹈。</div>
+                <div>你的手机镜头不是用来“自拍”的，它是你的显微镜和手术刀。</div>
+              </div>
+            </div>
+
+            <div class="reportColumn">
+              <div class="reportParagraph">INTJ 在小红书最适合做</div>
+              <div class="reportParagraph"><span class="reportStrong">「结构化洞察 + 决策模型输出者」</span></div>
+              <div class="reportParagraph">你不是来陪聊的，也不是来表演人格魅力的。</div>
+              <div class="reportParagraph">你是来：<span class="reportStrong">把复杂问题拆清楚，让人“看完少走弯路”。</span></div>
+            </div>
+
+            <img class="reportDivider" src="${imgFrame2147225027}" alt="" />
+
+            <div class="reportColumn">
+              <div class="reportSectionTitle">一、INTJ 在小红书的核心优势（你要用到极致）</div>
+              <div class="reportSubTitle">1、你的美学 · 冷峻几何</div>
+              <div class="reportImageWrap">
+                <img class="reportImage" src="${imgImage395}" alt="" />
+              </div>
+              <div class="reportParagraph">
+                你的视频需要像你的思维一样：干净、锐利、结构化。
+                <ul>
+                  <li><span class="reportStrong">构图：</span>对称构图，用网格线确保水平。</li>
+                  <li><span class="reportStrong">色调：</span>低饱和度高对比，黑白灰 + 冷蓝。</li>
+                  <li><span class="reportStrong">声音：</span>如果你不想出镜说话，使用打字机的声音、快门的声音、电流的声音，如《纸牌屋》。</li>
+                </ul>
+              </div>
+              <img class="reportDivider" src="${imgFrame2147225027}" alt="" />
+
+              <div class="reportParagraph">
+                <div class="reportSubTitle">2、你天然擅长「看清本质，而不是表象」</div>
+                <div>INTJ 的强项不是信息量，而是：</div>
+                <ul>
+                  <li>抽象能力</li>
+                  <li>模型化思维</li>
+                  <li>因果链路</li>
+                </ul>
+                <div>这正是小红书中 <span class="reportStrong">高认知用户</span> 最缺的。</div>
+              </div>
+              <div class="reportCardDark">
+                <img class="reportImageFull" src="${imgVisualSelection1}" alt="" />
+              </div>
+              <div class="reportParagraph">
+                适合你做的内容：
+                <ul>
+                  <li>为什么 X 会失败</li>
+                  <li>X 背后的结构性问题</li>
+                  <li>表面选择 → 实际成本</li>
+                </ul>
+              </div>
+              <div class="reportParagraph">
+                📌 你不是教技巧的人<br/>
+                📌 你是帮人提前想清楚的人
+              </div>
+              <img class="reportDivider" src="${imgFrame2147225027}" alt="" />
+
+              <div class="reportSubTitle">3、实操建议：如何利用“奥德赛”？</div>
+              <img class="reportImageFull" src="${imgImage396}" alt="" />
+              <div class="reportParagraph">
+                别去搞什么影视解说了，那是在反刍别人的呕吐物。<br/>
+                INTJ 需要触摸现实。<br/><br/>
+                <span class="reportStrong">哪怕你是个社恐，你也可以这样拍：</span>
+                <ol>
+                  <li><span class="reportStrong">POV (第一人称视角) 漫游：</span>手机挂胸口逛宜家，边走边吐槽：“储物柜设计是给懒人设的陷阱！”</li>
+                  <li><span class="reportStrong">开箱概念：</span>不拆产品，拆“想法”——白板画图：比特币是庞氏骗局？猫才是老板的管理学导师。</li>
+                  <li><span class="reportStrong">电影感生活：</span>独处时刻——读书/泡咖啡/修电脑。无声剪辑：孤独，是最高级的自由。</li>
+                </ol>
+              </div>
+            </div>
+
+            <div class="reportColumn">
+              <div class="reportSectionTitle">二、最适合 INTJ 的 4 种小红书内容方向</div>
+              <div class="reportSubTitle">方向一：决策分析型（最适合你）</div>
+              <div class="reportParagraph">
+                内容核心：
+                <ul>
+                  <li>帮别人想清楚“要不要做 / 值不值得”</li>
+                </ul>
+              </div>
+              <div class="reportParagraph">
+                示例选题：<br/>
+                -「这件事适不适合普通人？我拆给你看」<br/>
+                -「为什么很多人选了 A，后来后悔」<br/>
+                -「你以为是努力问题，其实是路径问题」
+              </div>
+              <div class="reportCardPurple">
+                <img class="reportImageFull" src="${imgVisualSelection41}" alt="" />
+              </div>
+              <div class="reportParagraph">
+                结构：
+                <ul>
+                  <li>场景 → 常见误判 → 关键变量 → 结论</li>
+                </ul>
+              </div>
+            </div>
+
+            <img class="reportDivider" src="${imgFrame2147225027}" alt="" />
+
+            <div class="reportColumn">
+              <div class="reportSectionTitle">三、INTJ 在小红书最容易踩的 6 个坑（务必避开）</div>
+              <div class="reportSubTitle">❌ 1. 写得太“论文感”</div>
+              <div class="reportParagraph">
+                内容核心：
+                <ul>
+                  <li>问题不是你不对<br/>而是——没人有耐心</li>
+                  <li>👉 改法：</li>
+                  <ul>
+                    <li>逻辑不减</li>
+                    <li>语言减半</li>
+                  </ul>
+                </ul>
+              </div>
+            </div>
+
+            <img class="reportDivider" src="${imgFrame2147225027}" alt="" />
+
+            <div class="reportColumn">
+              <div class="reportSectionTitle">六、我可以继续帮你（INTJ 定向）</div>
+              <div class="reportParagraph">
+                <span class="reportStrong">你可以直接说一句：</span><br/>
+                -「我想做偏理性 / 分析型的小红书账号」<br/>
+                -「我怕内容太冷，不知道怎么调整」<br/>
+                -「我有一套思考，但不知道怎么写得更像小红书」
+              </div>
+            </div>
+
+            <img class="reportDivider" src="${imgFrame2147225027}" alt="" />
+
+            <div class="reportChoiceCard">
+              <div class="reportChoiceHint">愿意跟我聊聊吗？</div>
+              <div class="reportChoiceTitle">平时你更倾向拍些什么主题呢？</div>
+              <div class="reportChoiceRow">
+                <div class="reportChoiceOption one">
+                  理性分析型
+                  <small>偏理性的分析阐述</small>
+                </div>
+                <div class="reportChoiceOption two">
+                  实用干货型
+                  <small>提供具体、可操作的方法</small>
+                </div>
+              </div>
+            </div>
+
+            <div style="text-align:center">
+              <span class="reportNote">关于INTJ的这条记忆我记住啦 ⭐</span>
+            </div>
+          </div>
+        </div>
+        ${inputBar()}
+      </div>
+    `;
+  }
+
+  // ====== Small UI helpers for templates ======
+  function sticker(icon, text){
+    return `
+      <div class="sticker pop">
+        <span class="badge">${esc(icon)}</span>
+        <span>${esc(text)}</span>
+      </div>
+    `;
+  }
+  function tag(text){
+    return `
+      <span class="chip" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14);box-shadow:none">
+        <span class="dot"></span>${esc(text)}
+      </span>
+    `;
+  }
+
+  function ipMascot(){
+    return `
+      <svg width="90" height="90" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="m1" cx="30%" cy="25%" r="70%">
+            <stop offset="0" stop-color="#FFE2A8"/>
+            <stop offset="1" stop-color="#F7B56C"/>
+          </radialGradient>
+          <linearGradient id="m2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#6ED2C5"/>
+            <stop offset="1" stop-color="#46B9AC"/>
+          </linearGradient>
+        </defs>
+        <circle cx="60" cy="58" r="40" fill="url(#m1)"/>
+        <ellipse cx="26" cy="34" rx="14" ry="16" fill="#F8B673"/>
+        <ellipse cx="94" cy="34" rx="14" ry="16" fill="#F8B673"/>
+        <circle cx="44" cy="56" r="8" fill="#fff"/>
+        <circle cx="44" cy="56" r="4" fill="#1D2A44"/>
+        <path d="M72 54c6 0 10 4 10 8" stroke="#1D2A44" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <circle cx="38" cy="72" r="6" fill="#FF8FB1"/>
+        <circle cx="78" cy="72" r="6" fill="#FF8FB1"/>
+        <path d="M52 78c4 4 12 4 16 0" stroke="#1D2A44" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <rect x="30" y="88" width="60" height="16" rx="8" fill="url(#m2)"/>
+      </svg>
+    `;
+  }
+
+  function miniIllustration(kind){
+    // Inline SVG illustrations (non-commercial, embedded)
+    const common = `style="filter: drop-shadow(0 18px 40px rgba(0,0,0,.22));"`;
+    if (kind === 'camera') return `
+      <div class="cardSoft p-2" style="border-radius:24px;width:118px">
+        <svg ${common} width="110" height="110" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#7C5CFF" stop-opacity=".95"/>
+              <stop offset="1" stop-color="#4EC6FF" stop-opacity=".85"/>
+            </linearGradient>
+            <linearGradient id="g2" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#FF5CA8" stop-opacity=".75"/>
+              <stop offset="1" stop-color="#FFDF6E" stop-opacity=".65"/>
+            </linearGradient>
+          </defs>
+          <rect x="12" y="28" width="96" height="70" rx="20" fill="rgba(255,255,255,.10)" stroke="rgba(255,255,255,.18)"/>
+          <rect x="30" y="20" width="26" height="16" rx="8" fill="rgba(255,255,255,.10)" stroke="rgba(255,255,255,.16)"/>
+          <circle cx="66" cy="64" r="22" fill="url(#g1)" opacity=".95"/>
+          <circle cx="66" cy="64" r="12" fill="rgba(10,10,16,.55)" stroke="rgba(255,255,255,.18)"/>
+          <circle cx="92" cy="44" r="6" fill="url(#g2)" opacity=".9"/>
+          <path d="M24 86c10 10 26 16 42 16 15 0 28-4 38-12" stroke="rgba(255,255,255,.20)" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+    `;
+    if (kind === 'poster') return `
+      <div class="cardSoft p-2" style="border-radius:24px;width:118px">
+        <svg ${common} width="110" height="110" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gp" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#FF5CA8" stop-opacity=".90"/>
+              <stop offset="1" stop-color="#7C5CFF" stop-opacity=".82"/>
+            </linearGradient>
+          </defs>
+          <rect x="18" y="14" width="84" height="92" rx="22" fill="rgba(255,255,255,.10)" stroke="rgba(255,255,255,.18)"/>
+          <rect x="28" y="28" width="64" height="10" rx="5" fill="rgba(255,255,255,.14)"/>
+          <rect x="28" y="44" width="44" height="10" rx="5" fill="rgba(255,255,255,.10)"/>
+          <rect x="28" y="60" width="64" height="34" rx="18" fill="url(#gp)" opacity=".92"/>
+          <circle cx="44" cy="77" r="6" fill="rgba(10,10,16,.42)"/>
+          <path d="M58 83c6-8 10-10 18-18" stroke="rgba(10,10,16,.40)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+    `;
+    if (kind === 'spark') return `
+      <div class="cardSoft p-2" style="border-radius:24px;width:118px">
+        <svg ${common} width="110" height="110" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gs" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#FFDF6E" stop-opacity=".90"/>
+              <stop offset="1" stop-color="#4EC6FF" stop-opacity=".78"/>
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="60" r="44" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.16)"/>
+          <path d="M60 22l6 20 20 6-20 6-6 20-6-20-20-6 20-6 6-20Z" fill="url(#gs)" opacity=".95"/>
+          <circle cx="86" cy="80" r="6" fill="rgba(124,92,255,.85)"/>
+          <circle cx="34" cy="82" r="4" fill="rgba(255,92,168,.82)"/>
+        </svg>
+      </div>
+    `;
+    if (kind === 'rocket') return `
+      <div class="cardSoft p-2" style="border-radius:24px;width:118px">
+        <svg ${common} width="110" height="110" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gr" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#7C5CFF" stop-opacity=".92"/>
+              <stop offset="1" stop-color="#FF5CA8" stop-opacity=".80"/>
+            </linearGradient>
+            <linearGradient id="gf" x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stop-color="#FFDF6E" stop-opacity=".92"/>
+              <stop offset="1" stop-color="#4EC6FF" stop-opacity=".78"/>
+            </linearGradient>
+          </defs>
+          <path d="M60 18c18 6 28 22 28 44 0 16-6 30-16 40-8-8-18-14-28-14s-20 6-28 14c-10-10-16-24-16-40 0-22 10-38 28-44 8-3 16-3 32 0Z" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.18)"/>
+          <path d="M60 26c14 6 22 18 22 34 0 12-4 22-12 30-6-6-14-10-22-10s-16 4-22 10c-8-8-12-18-12-30 0-16 8-28 22-34Z" fill="url(#gr)" opacity=".92"/>
+          <circle cx="60" cy="56" r="10" fill="rgba(10,10,16,.40)" stroke="rgba(255,255,255,.20)"/>
+          <path d="M60 90c-8 0-16 4-22 10 6 3 14 4 22 4s16-1 22-4c-6-6-14-10-22-10Z" fill="url(#gf)" opacity=".9"/>
+        </svg>
+      </div>
+    `;
+    if (kind === 'wave') return `
+      <div class="cardSoft p-2" style="border-radius:24px;width:118px">
+        <svg ${common} width="110" height="110" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gw" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#4EC6FF" stop-opacity=".88"/>
+              <stop offset="1" stop-color="#7C5CFF" stop-opacity=".80"/>
+            </linearGradient>
+          </defs>
+          <rect x="18" y="18" width="84" height="84" rx="26" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.16)"/>
+          <path d="M26 72c10-14 22-14 34 0s24 14 34 0v18H26V72Z" fill="url(#gw)" opacity=".95"/>
+          <path d="M30 64c10-10 20-10 30 0s20 10 30 0" stroke="rgba(255,255,255,.34)" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <circle cx="46" cy="46" r="6" fill="rgba(255,223,110,.82)"/>
+        </svg>
+      </div>
+    `;
+    if (kind === 'badge') return `
+      <div class="cardSoft p-2" style="border-radius:24px;width:118px">
+        <svg ${common} width="110" height="110" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gb" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#FFDF6E" stop-opacity=".90"/>
+              <stop offset="1" stop-color="#FF5CA8" stop-opacity=".75"/>
+            </linearGradient>
+          </defs>
+          <circle cx="60" cy="52" r="34" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.16)"/>
+          <path d="M40 88l10-10 10 8 10-8 10 10-10 14-20-8-20 8-10-14Z" fill="rgba(255,255,255,.08)" stroke="rgba(255,255,255,.16)"/>
+          <path d="M60 26l8 16 18 2-13 12 3 18-16-8-16 8 3-18-13-12 18-2 8-16Z" fill="url(#gb)" opacity=".95"/>
+        </svg>
+      </div>
+    `;
+    return '';
+  }
+
+  function inputBar(){
+    return `
+      <div class="inputBar">
+        <div class="inputIcon">+</div>
+        <div class="inputHint">发消息或按住说话</div>
+        <div class="inputMic">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3a3 3 0 0 1 3 3v6a3 3 0 1 1-6 0V6a3 3 0 0 1 3-3Z" stroke="rgba(255,255,255,.95)" stroke-width="2"/>
+            <path d="M5 11a7 7 0 0 0 14 0" stroke="rgba(255,255,255,.95)" stroke-width="2" stroke-linecap="round"/>
+            <path d="M12 18v3" stroke="rgba(255,255,255,.95)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    `;
+  }
+
+  function quizIllustration(step){
+    return `
+      <div class="quizIp">
+        <img src="image 6.png" alt="IP" />
+      </div>
+    `;
+  }
+
+  function rollerDim(idx, title, pair){
+    const selected = state.knownInput[idx] || pair[0];
+    const itemHeight = 32;
+    const offset = 32 - (pair.indexOf(selected) * itemHeight);
+    const touched = state.knownTouched[idx] ? "true" : "false";
+    return `
+      <div>
+        <div class="roller" data-act="roller" data-idx="${idx}" data-pair="${pair.join('')}" data-touched="${touched}">
+          <div class="rollerHighlight"></div>
+          <div class="rollerList" style="transform:translateY(${offset}px)">
+            ${pair.map(letter => `<div class="rollerItem">${letter}</div>`).join('')}
+          </div>
+        </div>
+        <div class="rollerLabel">${esc(title)}（${pair.join(' / ')}）</div>
+      </div>
+    `;
+  }
+
+  // ====== Render pipeline ======
+  function render(){
+    $screens.innerHTML = [
+      screenCover(),
+      screenKnown(),
+      screenQuiz(),
+      screenPlatform(),
+      screenReport(),
+    ].join('');
+
+    // position screens in horizontal stack
+    [...$screens.children].forEach((el, idx) => {
+      el.style.transform = `translateX(${idx*100}%)`;
+    });
+
+    bindActions();
+    updateSlider();
+    renderDots();
+    initBannerRotator();
+    setStageTheme(0);
+  }
+
+  function updateSlider(){
+    const screenId = currentScreenId();
+    $screens.style.transform = `translateX(-${screenId*100}%)`;
+    // update dots active
+    renderDots();
+  }
+
+  function startReportStream(){
+    if (state.reportTimer) window.clearTimeout(state.reportTimer);
+    const lines = Array.from(document.querySelectorAll('.llm-line'));
+    const progress = document.getElementById('llmProgress');
+    if (!lines.length) return;
+    lines.forEach(l => l.classList.remove('show'));
+    if (progress) progress.style.width = '0%';
+    let i = 0;
+    const step = () => {
+      if (i >= lines.length) return;
+      lines[i].classList.add('show');
+      if (progress) progress.style.width = `${Math.round(((i+1) / lines.length) * 100)}%`;
+      i += 1;
+      state.reportTimer = window.setTimeout(step, 260);
+    };
+    state.reportTimer = window.setTimeout(step, 200);
+  }
+
+  function initBannerRotator(){
+    if (state.bannerTimer) window.clearInterval(state.bannerTimer);
+    const track = document.getElementById('carouselTrack');
+    if (!track) return;
+    let index = 0;
+    const itemHeight = 48;
+    const totalItems = 3;
+    state.bannerTimer = window.setInterval(()=>{
+      index = (index + 1) % totalItems;
+      track.style.transform = `translateY(-${index * itemHeight}px)`;
+    }, 2000);
+  }
+
+  function typeQuizFeedback(text){
+    const el = document.getElementById('quizFeedbackText');
+    if (!el) return;
+    if (state.quizFeedbackTimer) window.clearInterval(state.quizFeedbackTimer);
+    const chars = String(text || "懂你一下").split('');
+    el.textContent = '';
+    let i = 0;
+    state.quizFeedbackTimer = window.setInterval(()=>{
+      el.textContent += chars[i] || '';
+      i += 1;
+      if (i >= chars.length){
+        window.clearInterval(state.quizFeedbackTimer);
+        state.quizFeedbackTimer = null;
+      }
+    }, 30);
+  }
+
+  function renderDots(){
+    $dots.innerHTML = '';
+    const total = state.flow.length;
+    for(let i=0;i<total;i++){
+      const d = document.createElement('div');
+      d.className = 'dotNav' + (i===state.pos ? ' active' : '');
+      $dots.appendChild(d);
+    }
+  }
+
+  function updateKnownGenerateState(){
+    const canNext = state.knownTouched.every(Boolean);
+    const nextBtn = document.querySelector('[data-act="known-next"]');
+    if (nextBtn) nextBtn.disabled = !canNext;
+    const genBtn = document.querySelector('[data-act="known-generate"]');
+    if (genBtn) genBtn.disabled = !canNext;
+  }
+
+  function bindActions(){
+    document.querySelectorAll('[data-act="prev"]').forEach(el=> el.addEventListener('click', prev));
+
+    document.querySelectorAll('[data-act="pick-known"]').forEach(el=> el.addEventListener('click', ()=>{
+      state.mode = 'known';
+      setFlowForMode();
+      state.platformChosen = false;
+      state.knownInput = ['I','N','F','P'];
+      state.knownTouched = [false,false,false,false];
+      setStageTheme(0);
+      goToFlowPos(1);
+    }));
+
+    document.querySelectorAll('[data-act="pick-quiz"]').forEach(el=> el.addEventListener('click', ()=>{
+      state.mode = 'quiz';
+      setFlowForMode();
+      state.quizIndex = 0;
+      state.quizAnswers = {};
+      setStageTheme(0);
+      goToFlowPos(1);
+    }));
+
+    document.querySelectorAll('[data-act="roller"]').forEach(el => {
+      const pair = el.getAttribute('data-pair').split('');
+      const idx = +el.getAttribute('data-idx');
+      const itemHeight = 32;
+      const setToIndex = (nextIndex, updateFeedback = true, markTouched = true) => {
+        const letter = pair[nextIndex];
+        state.knownInput[idx] = letter;
+        if (markTouched) {
+          state.knownTouched[idx] = true;
+          el.setAttribute('data-touched', 'true');
+        }
+        const list = el.querySelector('.rollerList');
+        const offset = 32 - (nextIndex * itemHeight);
+        list.style.transform = `translateY(${offset}px)`;
+        const preview = document.getElementById('mbtiPreview');
+        if (preview) preview.innerHTML = buildKnownHtml();
+        if (updateFeedback) {
+          const feedback = document.getElementById('knownFeedback');
+          if (feedback) {
+            feedback.textContent = feedbackMapLetter[letter] || "默认值可直接生成，也可以随时滚动切换。";
+            feedback.classList.remove('hintFade');
+            void feedback.offsetWidth;
+            feedback.classList.add('hintFade');
+          }
+        }
+        updateKnownGenerateState();
+      };
+      const toggle = (dir) => {
+        const current = pair.indexOf(state.knownInput[idx]);
+        const nextIndex = dir > 0 ? Math.min(pair.length-1, current+1) : Math.max(0, current-1);
+        if (nextIndex === current) return;
+        if (!state.knownTouched[idx]) {
+          setToIndex(current, true, true);
+          return;
+        }
+        setToIndex(nextIndex, true, true);
+      };
+      el.addEventListener('wheel', (e)=>{
+        e.preventDefault();
+        toggle(e.deltaY > 0 ? 1 : -1);
+      }, {passive:false});
+      el.addEventListener('click', ()=>{
+        const current = pair.indexOf(state.knownInput[idx]);
+        const nextIndex = current === 0 ? 1 : 0;
+        if (!state.knownTouched[idx]) {
+          setToIndex(current, true, true);
+          return;
+        }
+        setToIndex(nextIndex, true, true);
+      });
+      el.addEventListener('touchstart', (e)=>{ el._touchY = e.changedTouches[0].clientY; }, {passive:true});
+      el.addEventListener('touchend', (e)=>{
+        const endY = e.changedTouches[0].clientY;
+        const dy = endY - (el._touchY || endY);
+        if (Math.abs(dy) < 8) return;
+        toggle(dy > 0 ? 1 : -1);
+      }, {passive:true});
+      // ensure initial position
+      const initialIndex = Math.max(0, pair.indexOf(state.knownInput[idx]));
+      setToIndex(initialIndex, false, false);
+    });
+
+    document.querySelectorAll('[data-act="known-clear"]').forEach(el=> el.addEventListener('click', ()=>{
+      state.knownInput = ['I','N','F','P'];
+      state.knownTouched = [false,false,false,false];
+      state.platformChosen = false;
+      setStageTheme(0);
+      showToast("已清空", "", 1000);
+      render();
+    }));
+
+    document.querySelectorAll('[data-act="known-next"]').forEach(el=> el.addEventListener('click', ()=>{
+      if (!state.knownTouched.every(Boolean)) return;
+      state.platformChosen = false;
+      goToFlowPos(2);
+    }));
+
+    document.querySelectorAll('[data-act="platform-pick"]').forEach(el=> el.addEventListener('click', ()=>{
+      const key = el.getAttribute('data-key');
+      state.platform = key;
+      state.platformChosen = true;
+      const platformTheme = {
+        "小红书": 3,
+        "抖音": 1,
+        "朋友圈": 0,
+        "B站": 2,
+      };
+      setStageTheme(platformTheme[key] ?? 0);
+      state.mode = 'known';
+      setFlowForMode();
+      inferFromKnown();
+      confettiBurst();
+      render();
+      goToFlowPos(3);
+    }));
+
+    document.querySelectorAll('[data-act="known-generate"]').forEach(el=> el.addEventListener('click', ()=>{
+      if (state.mode === 'known' && !state.platformChosen) return;
+      state.mode = 'known';
+      setFlowForMode();
+      inferFromKnown();
+      showToast("解锁完成", "", 1100);
+      confettiBurst();
+      goToFlowPos(3);
+    }));
+
+    document.querySelectorAll('[data-act="quiz-pick"]').forEach(el => {
+      el.addEventListener('click', async ()=>{
+        const qid = el.getAttribute('data-qid');
+        const key = el.getAttribute('data-key');
+        // lock selections
+        el.classList.add('selected');
+        el.style.pointerEvents = 'none';
+        // find feedback
+        const q = quiz.find(x=>x.id===qid);
+        const opt = q.options.find(o=>String(o.key)===String(key));
+        state.quizAnswers[qid] = key;
+        state.quizFeedback = opt?.feedback || "懂你一下";
+
+        if (qid === 'Q5'){
+          state.mode = 'quiz';
+          setFlowForMode();
+          inferFromQuiz();
+          confettiBurst();
+          showToast("匹配完成", "", 1100);
+          goToFlowPos(2);
+          return;
+        }
+        state.quizIndex = Math.min(state.quizIndex+1, quiz.length-1);
+        setStageTheme(state.quizIndex % 5);
+        render();
+        
+        typeQuizFeedback(state.quizFeedback);
+      });
+    });
+
+    document.querySelectorAll('[data-act="restartQuiz"]').forEach(el=> el.addEventListener('click', ()=>{
+      state.quizIndex = 0;
+      state.quizAnswers = {};
+      state.quizFeedback = "懂你一下";
+      setStageTheme(0);
+      showToast("重新开始", "", 1000);
+      render();
+    }));
+
+    document.querySelectorAll('[data-act="skipQuiz"]').forEach(el=> el.addEventListener('click', ()=>{
+      // fill defaults if incomplete
+      state.mode = 'quiz';
+      setFlowForMode();
+      inferFromQuiz();
+      showToast("先看结果", "", 1000);
+      goToFlowPos(2);
+    }));
+
+    document.querySelectorAll('[data-act="backToKnown"]').forEach(el=> el.addEventListener('click', ()=>{
+      state.mode = 'known';
+      setFlowForMode();
+      goToFlowPos(1);
+    }));
+
+    document.querySelectorAll('[data-act="closeDemo"]').forEach(el=> el.addEventListener('click', ()=>{
+      resetAll();
+      render();
+      goToFlowPos(0);
+      showToast("已回到首页", "", 1000);
+    }));
+
+    document.querySelectorAll('[data-act="open-modal"]').forEach(el=> el.addEventListener('click', ()=>{
+      openExampleModal();
+    }));
+
+    const $modalOverlay = document.getElementById('modalOverlay');
+    const $modalClose = document.getElementById('modalClose');
+    if ($modalClose) {
+      $modalClose.addEventListener('click', closeModal);
+    }
+    if ($modalOverlay) {
+      $modalOverlay.addEventListener('click', (e)=>{
+        if (e.target === $modalOverlay) closeModal();
+      });
+    }
+  }
+
+  function openExampleModal(){
+    const $modalOverlay = document.getElementById('modalOverlay');
+    const $modalContent = document.getElementById('modalContent');
+    if (!$modalOverlay || !$modalContent) return;
+    
+    // 粘贴完整的报告内容
+    const mbti = 'INTJ';
+    $modalContent.innerHTML = `
+      <div class="reportHeroCard">
+        <img class="reportHeroImage" src="http://localhost:3845/assets/e65d3f016c967672341aeceef1da06f6248b97e1.png" alt="" />
+        <div class="reportHeroSub">给那些觉得大多数视频都很无脑的 ${esc(mbti)}</div>
+      </div>
+
+      <div class="reportConclusionCard">
+        <img class="reportConclusionBg" src="http://localhost:3845/assets/1bed771516fb8356a1c28eb52acaa55502c4cede.png" alt="" />
+        <div class="reportConclusionText">
+          <div class="title">一句话结论</div>
+          <div class="subtitle">你的定位 · 灵感架构师</div>
+          <div>承认吧，你并不想对着镜头大喊大叫，也不想跳那些像被电击了一样的热门舞蹈。</div>
+          <div>你的手机镜头不是用来"自拍"的，它是你的显微镜和手术刀。</div>
+        </div>
+      </div>
+
+      <div class="reportColumn">
+        <div class="reportParagraph">INTJ 在小红书最适合做</div>
+        <div class="reportParagraph"><span class="reportStrong">「结构化洞察 + 决策模型输出者」</span></div>
+        <div class="reportParagraph">你不是来陪聊的，也不是来表演人格魅力的。</div>
+        <div class="reportParagraph">你是来：<span class="reportStrong">把复杂问题拆清楚，让人"看完少走弯路"。</span></div>
+      </div>
+
+      <img class="reportDivider" src="http://localhost:3845/assets/377d7f82f040ef3db630b8d0615ffe891bd327ef.svg" alt="" />
+
+      <div class="reportColumn">
+        <div class="reportSectionTitle">一、INTJ 在小红书的核心优势（你要用到极致）</div>
+        <div class="reportSubTitle">1、你的美学 · 冷峻几何</div>
+        <div class="reportImageWrap">
+          <img class="reportImage" src="http://localhost:3845/assets/b40c95f931a8823c2ab75d607c4344b3b625196b.png" alt="" />
+        </div>
+        <div class="reportParagraph">
+          你的视频需要像你的思维一样：干净、锐利、结构化。
+          <ul>
+            <li><span class="reportStrong">构图：</span>对称构图，用网格线确保水平。</li>
+            <li><span class="reportStrong">色调：</span>低饱和度高对比，黑白灰 + 冷蓝。</li>
+            <li><span class="reportStrong">声音：</span>如果你不想出镜说话，使用打字机的声音、快门的声音、电流的声音，如《纸牌屋》。</li>
+          </ul>
+        </div>
+        <img class="reportDivider" src="http://localhost:3845/assets/377d7f82f040ef3db630b8d0615ffe891bd327ef.svg" alt="" />
+
+        <div class="reportParagraph">
+          <div class="reportSubTitle">2、你天然擅长「看清本质，而不是表象」</div>
+          <div>INTJ 的强项不是信息量，而是：</div>
+          <ul>
+            <li>抽象能力</li>
+            <li>模型化思维</li>
+            <li>因果链路</li>
+          </ul>
+          <div>这正是小红书中 <span class="reportStrong">高认知用户</span> 最缺的。</div>
+        </div>
+        <div class="reportCardDark">
+          <img class="reportImageFull" src="http://localhost:3845/assets/72cb8b0775bfad3e3b27f91b07c975d698cc2dac.png" alt="" />
+        </div>
+        <div class="reportParagraph">
+          适合你做的内容：
+          <ul>
+            <li>为什么 X 会失败</li>
+            <li>X 背后的结构性问题</li>
+            <li>表面选择 → 实际成本</li>
+          </ul>
+        </div>
+        <div class="reportParagraph">
+          📌 你不是教技巧的人<br/>
+          📌 你是帮人提前想清楚的人
+        </div>
+      </div>
+
+      <img class="reportDivider" src="http://localhost:3845/assets/377d7f82f040ef3db630b8d0615ffe891bd327ef.svg" alt="" />
+
+      <div class="reportColumn">
+        <div class="reportSectionTitle">二、最适合 INTJ 的 4 种小红书内容方向</div>
+        <div class="reportSubTitle">方向一：决策分析型（最适合你）</div>
+        <div class="reportParagraph">
+          内容核心：帮别人想清楚"要不要做 / 值不值得"
+        </div>
+        <div class="reportParagraph">
+          示例选题：<br/>
+          -「这件事适不适合普通人？我拆给你看」<br/>
+          -「为什么很多人选了 A，后来后悔」<br/>
+          -「你以为是努力问题，其实是路径问题」
+        </div>
+      </div>
+
+      
+    `;
+    
+    $modalOverlay.classList.add('active');
+  }
+
+  function closeModal(){
+    const $modalOverlay = document.getElementById('modalOverlay');
+    if ($modalOverlay) {
+      $modalOverlay.classList.remove('active');
+    }
+  }
+
+
+  function resetAll(){
+    state.mode = null;
+    state.flow = [0];
+    state.pos = 0;
+    state.knownInput = ['I','N','F','P'];
+    state.knownTouched = [false,false,false,false];
+    state.quizIndex = 0;
+    state.quizAnswers = {};
+    state.inferredMBTI = 'INFP';
+    state.platform = '小红书';
+    state.platformChosen = false;
+    state.toast = null;
+    state.reportTimer = null;
+    state.bannerTimer = null;
+    state.quizFeedback = "懂你一下";
+    state.quizFeedbackTimer = null;
+    setStageTheme(0);
+  }
+
+  // ====== Touch swipe (H5 feel) ======
+  let touchY = null;
+  let touchX = null;
+  const stage = document.getElementById('stage');
+  stage.addEventListener('touchstart', (e)=>{
+    const t = e.changedTouches[0];
+    touchY = t.clientY;
+    touchX = t.clientX;
+  }, {passive:true});
+  stage.addEventListener('touchend', (e)=>{
+    if (touchY==null) return;
+    const t = e.changedTouches[0];
+    const dy = t.clientY - touchY;
+    const dx = t.clientX - touchX;
+    touchY = null; touchX = null;
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+    if (dx < 0) next(); else prev();
+  }, {passive:true});
+
+  // keyboard for desktop demo
+  window.addEventListener('keydown', (e)=>{
+    if (e.key === 'ArrowLeft') prev();
+    if (e.key === 'ArrowRight') next();
+    if (e.key === ' ') next();
+  });
+
+  // ====== Stars canvas ======
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+  let W=0,H=0,stars=[];
+  function resize(){
+    W = canvas.width = canvas.offsetWidth * devicePixelRatio;
+    H = canvas.height = canvas.offsetHeight * devicePixelRatio;
+    stars = Array.from({length: 90}, ()=>({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      r: (Math.random()*1.6 + .5) * devicePixelRatio,
+      a: Math.random()*0.6 + 0.2,
+      s: (Math.random()*0.4 + 0.12) * devicePixelRatio
+    }));
+  }
+  function tick(){
+    ctx.clearRect(0,0,W,H);
+    // faint nebula arcs
+    ctx.save();
+    ctx.globalAlpha = 0.18;
+    const g = ctx.createRadialGradient(W*0.3, H*0.2, 0, W*0.3, H*0.2, Math.max(W,H)*0.6);
+    g.addColorStop(0, 'rgba(124,92,255,.45)');
+    g.addColorStop(1, 'rgba(124,92,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,W,H);
+    ctx.restore();
+
+    for (const s of stars){
+      s.y += s.s;
+      if (s.y > H) { s.y = -20; s.x = Math.random()*W; }
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,255,255,${s.a})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(tick);
+  }
+  new ResizeObserver(resize).observe(stage);
+  resize(); tick();
+
+  // ====== Init ======
+  render();
+
+})();
+</script>
+</body>
+</html>
