@@ -6,6 +6,24 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
 
+const HOME_IMAGES = [
+  'assets/首页ui素材/头部标题.webp',
+  'assets/首页ui素材/头部ip.webp',
+  'assets/首页ui素材/中间图.webp',
+  'assets/首页ui素材/入口1.webp',
+  'assets/首页ui素材/入口2.webp',
+  'assets/首页ui素材/最后图.webp',
+].map(assetPath);
+
+function preloadImages(srcs) {
+  return Promise.all(srcs.map((src) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = resolve;
+    img.onerror = resolve;
+    img.src = src;
+  })));
+}
+
 // =====================================================
 // Decorative SVGs (4-point sparkle, star, heart, blob)
 // =====================================================
@@ -215,6 +233,33 @@ function Mascot({ size = 140, className = '', style = {}, mbti = '' }) {
 // HOME — Magazine layout (参考图还原)
 // =====================================================
 function Home({ onPath, onSample }) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    preloadImages(HOME_IMAGES).then(() => {
+      if (alive) setReady(true);
+    });
+    return () => { alive = false; };
+  }, []);
+
+  if (!ready) {
+    return (
+      <div className="home-loader" style={{ position: 'relative', zIndex: 2 }}>
+        <StatusBar />
+        <div className="home-loader-inner">
+          <div className="home-loader-orbit">
+            <Sparkle size={22} color="var(--yellow)" />
+          </div>
+          <div className="home-loader-title">MBTI</div>
+          <div className="home-loader-bar">
+            <span />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ position: 'relative', zIndex: 2, background: '#ffffff' }}>
       <StatusBar />
@@ -272,7 +317,6 @@ function Home({ onPath, onSample }) {
         <img
           src={assetPath('assets/首页ui素材/中间图.webp')}
           alt=""
-          loading="lazy"
           style={{ width: '100%', display: 'block' }}
         />
       </div>
@@ -299,7 +343,6 @@ function Home({ onPath, onSample }) {
             <img
               src={assetPath('assets/首页ui素材/入口1.webp')}
               alt="5题快速测"
-              loading="lazy"
               style={{ width: '100%', display: 'block' }}
             />
           </div>
@@ -315,7 +358,6 @@ function Home({ onPath, onSample }) {
             <img
               src={assetPath('assets/首页ui素材/入口2.webp')}
               alt="输入MBTI"
-              loading="lazy"
               style={{ width: '100%', display: 'block' }}
             />
           </div>
@@ -330,7 +372,6 @@ function Home({ onPath, onSample }) {
             <img
               src={assetPath('assets/首页ui素材/最后图.webp')}
               alt="生成专属海报"
-              loading="lazy"
               style={{ width: '100%', display: 'block' }}
             />
           </div>
