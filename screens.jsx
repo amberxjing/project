@@ -199,8 +199,8 @@ function QuizOptionIcon({ name, active }) {
 
 function Mascot({ size = 140, className = '', style = {}, mbti = '' }) {
   const src = mbti
-    ? assetPath(`assets/mbti-素材/${mbti.toLowerCase()}.png`)
-    : assetPath('assets/mascot.png');
+    ? assetPath(`assets/mbti-素材/${mbti.toLowerCase()}.webp`)
+    : assetPath('assets/mascot.webp');
   return (
     <img src={src} alt={mbti || 'mascot'}
     className={className}
@@ -224,12 +224,12 @@ function Home({ onPath, onSample }) {
         {/* 标题左 + IP右：顶部留白，天使圈与30s对齐 */}
         <div style={{ position: 'relative', paddingLeft: 22, paddingTop: 62, paddingBottom: 60 }}>
           <img
-            src={assetPath('assets/首页ui素材/头部标题.png')}
+            src={assetPath('assets/首页ui素材/头部标题.webp')}
             alt=""
             style={{ width: '52%', display: 'block', position: 'relative', zIndex: 2 }}
           />
           <img
-            src={assetPath('assets/首页ui素材/头部ip.png')}
+            src={assetPath('assets/首页ui素材/头部ip.webp')}
             alt=""
             style={{
               position: 'absolute', right: -20, top: 46,
@@ -270,8 +270,9 @@ function Home({ onPath, onSample }) {
         paddingTop: 32,
       }}>
         <img
-          src={assetPath('assets/首页ui素材/中间图.png')}
+          src={assetPath('assets/首页ui素材/中间图.webp')}
           alt=""
+          loading="lazy"
           style={{ width: '100%', display: 'block' }}
         />
       </div>
@@ -296,8 +297,9 @@ function Home({ onPath, onSample }) {
             }}
           >
             <img
-              src={assetPath('assets/首页ui素材/入口1.png')}
+              src={assetPath('assets/首页ui素材/入口1.webp')}
               alt="5题快速测"
+              loading="lazy"
               style={{ width: '100%', display: 'block' }}
             />
           </div>
@@ -311,8 +313,9 @@ function Home({ onPath, onSample }) {
             }}
           >
             <img
-              src={assetPath('assets/首页ui素材/入口2.png')}
+              src={assetPath('assets/首页ui素材/入口2.webp')}
               alt="输入MBTI"
+              loading="lazy"
               style={{ width: '100%', display: 'block' }}
             />
           </div>
@@ -325,8 +328,9 @@ function Home({ onPath, onSample }) {
             style={{ cursor: 'pointer' }}
           >
             <img
-              src={assetPath('assets/首页ui素材/最后图.png')}
+              src={assetPath('assets/首页ui素材/最后图.webp')}
               alt="生成专属海报"
+              loading="lazy"
               style={{ width: '100%', display: 'block' }}
             />
           </div>
@@ -672,7 +676,7 @@ function Quiz({ onBack, onDone }) {
         {/* 机器人 IP - 放大，左侧主角 */}
         <div className="float" style={{ flex: '0 0 auto' }}>
           <img
-            src={assetPath('assets/问题页ui素材/image 3418.png')}
+            src={assetPath('assets/问题页ui素材/image 3418.webp')}
             alt="mascot"
             style={{
               width: 150, height: 'auto', objectFit: 'contain',
@@ -876,7 +880,7 @@ function PlatformPicker({ onBack, onDone }) {
       }}>
         <div className="float" style={{ flex: '0 0 auto' }}>
           <img
-            src={assetPath('assets/问题页ui素材/image 3418.png')}
+            src={assetPath('assets/问题页ui素材/image 3418.webp')}
             alt="mascot"
             style={{
               width: 150, height: 'auto', objectFit: 'contain',
