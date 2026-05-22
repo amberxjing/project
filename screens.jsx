@@ -6,6 +6,13 @@ import React, { useState, useEffect, useRef } from 'react';
 
 const assetPath = (path) => `${import.meta.env.BASE_URL}${path}`;
 
+const MBTI_TYPES = [
+  'intj', 'intp', 'entj', 'entp',
+  'infj', 'infp', 'enfj', 'enfp',
+  'istj', 'isfj', 'estj', 'esfj',
+  'istp', 'isfp', 'estp', 'esfp',
+];
+
 const HOME_IMAGES = [
   'assets/首页ui素材/头部标题.webp',
   'assets/首页ui素材/头部ip.webp',
@@ -13,6 +20,9 @@ const HOME_IMAGES = [
   'assets/首页ui素材/入口1.webp',
   'assets/首页ui素材/入口2.webp',
   'assets/首页ui素材/最后图.webp',
+  'assets/问题页ui素材/image 3418.webp',
+  'assets/mascot.webp',
+  ...MBTI_TYPES.map((type) => `assets/mbti-素材/${type}.webp`),
 ].map(assetPath);
 
 function preloadImages(srcs) {
