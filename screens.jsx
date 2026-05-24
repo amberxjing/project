@@ -15,7 +15,8 @@ const MBTI_TYPES = [
 
 const HOME_IMAGES = [
   'assets/首页ui素材/头部标题.webp',
-  'assets/首页ui素材/头部ip.webp',
+  'assets/首页ui素材/头部ip.png',
+  'assets/首页ui素材/头部水晶球.png',
   'assets/首页ui素材/中间图.webp',
   'assets/首页ui素材/入口1.webp',
   'assets/首页ui素材/入口2.webp',
@@ -277,20 +278,26 @@ function Home({ onPath, onSample }) {
       {/* ── 白色 HERO 区域 ── */}
       <div style={{ background: '#ffffff' }}>
         {/* 标题左 + IP右：顶部留白，天使圈与30s对齐 */}
-        <div style={{ position: 'relative', paddingLeft: 22, paddingTop: 62, paddingBottom: 60 }}>
+        <div className="hero" style={{ paddingLeft: 22, paddingTop: 62, paddingBottom: 60 }}>
           <img
             src={assetPath('assets/首页ui素材/头部标题.webp')}
             alt=""
             style={{ width: '52%', display: 'block', position: 'relative', zIndex: 2 }}
           />
-          <img
-            src={assetPath('assets/首页ui素材/头部ip.webp')}
-            alt=""
-            style={{
-              position: 'absolute', right: -20, top: 46,
-              width: '47%', zIndex: 1,
-            }}
-          />
+          <div className="hero-ip-wrap">
+            <div className="hero-ip-inner">
+              <img
+                className="hero-ip-img hero-float hero-float-ip"
+                src={assetPath('assets/首页ui素材/头部ip.png')}
+                alt=""
+              />
+              <img
+                className="hero-ball-img hero-float hero-float-ball"
+                src={assetPath('assets/首页ui素材/头部水晶球.png')}
+                alt=""
+              />
+            </div>
+          </div>
         </div>
 
         {/* CTA 按钮 */}

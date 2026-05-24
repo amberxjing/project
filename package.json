@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 8765",
-    "build": "vite build && mkdir -p dist/assets && cp -R assets/. dist/assets/ && cp -R uploads dist/uploads && find dist -name .DS_Store -delete && find dist -name '*.png' -delete",
+    "build": "vite build && mkdir -p dist/assets && cp -R assets/. dist/assets/ && cp -R uploads dist/uploads && find dist -name .DS_Store -delete && find dist -name '*.png' ! -path '*/首页ui素材/头部ip.png' ! -path '*/首页ui素材/头部水晶球.png' -delete",
     "preview": "vite preview --host 127.0.0.1 --port 8765"
   },
   "dependencies": {
