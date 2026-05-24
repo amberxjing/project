@@ -13,10 +13,13 @@ const MBTI_TYPES = [
   'istp', 'isfp', 'estp', 'esfp',
 ];
 
-const HOME_IMAGES = [
+const HOME_CRITICAL_IMAGES = [
   'assets/首页ui素材/头部标题.webp',
-  'assets/首页ui素材/头部ip.png',
-  'assets/首页ui素材/头部水晶球.png',
+  'assets/首页ui素材/头部ip.webp',
+  'assets/首页ui素材/头部水晶球.webp',
+].map(assetPath);
+
+const HOME_DEFERRED_IMAGES = [
   'assets/首页ui素材/中间图.webp',
   'assets/首页ui素材/入口1.webp',
   'assets/首页ui素材/入口2.webp',
@@ -248,8 +251,19 @@ function Home({ onPath, onSample }) {
 
   useEffect(() => {
     let alive = true;
-    preloadImages(HOME_IMAGES).then(() => {
-      if (alive) setReady(true);
+    preloadImages(HOME_CRITICAL_IMAGES).then(() => {
+      if (!alive) return;
+      setReady(true);
+
+      const warmupDeferredImages = () => {
+        preloadImages(HOME_DEFERRED_IMAGES);
+      };
+
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(warmupDeferredImages, { timeout: 3000 });
+      } else {
+        window.setTimeout(warmupDeferredImages, 500);
+      }
     });
     return () => { alive = false; };
   }, []);
@@ -288,12 +302,12 @@ function Home({ onPath, onSample }) {
             <div className="hero-ip-inner">
               <img
                 className="hero-ip-img hero-float hero-float-ip"
-                src={assetPath('assets/首页ui素材/头部ip.png')}
+                src={assetPath('assets/首页ui素材/头部ip.webp')}
                 alt=""
               />
               <img
                 className="hero-ball-img hero-float hero-float-ball"
-                src={assetPath('assets/首页ui素材/头部水晶球.png')}
+                src={assetPath('assets/首页ui素材/头部水晶球.webp')}
                 alt=""
               />
             </div>
@@ -334,6 +348,8 @@ function Home({ onPath, onSample }) {
         <img
           src={assetPath('assets/首页ui素材/中间图.webp')}
           alt=""
+          loading="lazy"
+          decoding="async"
           style={{ width: '100%', display: 'block' }}
         />
       </div>
@@ -360,6 +376,8 @@ function Home({ onPath, onSample }) {
             <img
               src={assetPath('assets/首页ui素材/入口1.webp')}
               alt="5题快速测"
+              loading="lazy"
+              decoding="async"
               style={{ width: '100%', display: 'block' }}
             />
           </div>
@@ -375,6 +393,8 @@ function Home({ onPath, onSample }) {
             <img
               src={assetPath('assets/首页ui素材/入口2.webp')}
               alt="输入MBTI"
+              loading="lazy"
+              decoding="async"
               style={{ width: '100%', display: 'block' }}
             />
           </div>
@@ -389,6 +409,8 @@ function Home({ onPath, onSample }) {
             <img
               src={assetPath('assets/首页ui素材/最后图.webp')}
               alt="生成专属海报"
+              loading="lazy"
+              decoding="async"
               style={{ width: '100%', display: 'block' }}
             />
           </div>
