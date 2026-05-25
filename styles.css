@@ -348,7 +348,14 @@ body {
   border-radius: inherit;
   transform-origin: left center;
   background: linear-gradient(90deg, #7B52E0 0%, #4B68F5 100%);
-  animation: loaderPulse 1.1s ease-in-out infinite;
+  transition: transform 0.22s ease;
+}
+.home-loader-progress {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(90, 63, 196, 0.72);
+  letter-spacing: 0.04em;
 }
 
 .press { transition: transform 0.12s ease; }

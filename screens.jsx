@@ -26,11 +26,24 @@ const HOME_IMAGES = [
   ...MBTI_TYPES.map((type) => `assets/mbti-素材/${type}.webp`),
 ].map(assetPath);
 
-function preloadImages(srcs) {
+function preloadImages(srcs, onProgress) {
+  let loaded = 0;
+  const total = srcs.length;
+  const markLoaded = () => {
+    loaded += 1;
+    if (onProgress) onProgress(Math.round((loaded / total) * 100));
+  };
+
   return Promise.all(srcs.map((src) => new Promise((resolve) => {
     const img = new Image();
-    img.onload = resolve;
-    img.onerror = resolve;
+    img.onload = () => {
+      markLoaded();
+      resolve();
+    };
+    img.onerror = () => {
+      markLoaded();
+      resolve();
+    };
     img.src = src;
   })));
 }
@@ -245,10 +258,13 @@ function Mascot({ size = 140, className = '', style = {}, mbti = '' }) {
 // =====================================================
 function Home({ onPath, onSample }) {
   const [ready, setReady] = useState(false);
+  const [loadProgress, setLoadProgress] = useState(0);
 
   useEffect(() => {
     let alive = true;
-    preloadImages(HOME_IMAGES).then(() => {
+    preloadImages(HOME_IMAGES, (progress) => {
+      if (alive) setLoadProgress(progress);
+    }).then(() => {
       if (alive) setReady(true);
     });
     return () => { alive = false; };
@@ -264,8 +280,9 @@ function Home({ onPath, onSample }) {
           </div>
           <div className="home-loader-title">MBTI</div>
           <div className="home-loader-bar">
-            <span />
+            <span style={{ transform: `scaleX(${loadProgress / 100})` }} />
           </div>
+          <div className="home-loader-progress">{loadProgress}%</div>
         </div>
       </div>
     );
