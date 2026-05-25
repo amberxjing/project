@@ -13,13 +13,10 @@ const MBTI_TYPES = [
   'istp', 'isfp', 'estp', 'esfp',
 ];
 
-const HOME_CRITICAL_IMAGES = [
+const HOME_IMAGES = [
   'assets/首页ui素材/头部标题.webp',
   'assets/首页ui素材/头部ip.webp',
   'assets/首页ui素材/头部水晶球.webp',
-].map(assetPath);
-
-const HOME_DEFERRED_IMAGES = [
   'assets/首页ui素材/中间图.webp',
   'assets/首页ui素材/入口1.webp',
   'assets/首页ui素材/入口2.webp',
@@ -251,19 +248,8 @@ function Home({ onPath, onSample }) {
 
   useEffect(() => {
     let alive = true;
-    preloadImages(HOME_CRITICAL_IMAGES).then(() => {
-      if (!alive) return;
-      setReady(true);
-
-      const warmupDeferredImages = () => {
-        preloadImages(HOME_DEFERRED_IMAGES);
-      };
-
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(warmupDeferredImages, { timeout: 3000 });
-      } else {
-        window.setTimeout(warmupDeferredImages, 500);
-      }
+    preloadImages(HOME_IMAGES).then(() => {
+      if (alive) setReady(true);
     });
     return () => { alive = false; };
   }, []);
