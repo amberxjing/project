@@ -494,8 +494,23 @@ function Module({ title, badge, badgeColor, darkBadgeText, children }) {
 // =====================================================
 function SampleSheet({ open, onClose }) {
   const [closing, setClosing] = useStateR(false);
+  const [toast, setToast] = useStateR(null);
   if (!open && !closing) return null;
   const close = () => { setClosing(true); setTimeout(() => { setClosing(false); onClose(); }, 280); };
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(null), 1800); };
+
+  const mbti = 'INTJ';
+  const platform = '小红书';
+  const mbtiColor = (window.MBTI_COLORS && window.MBTI_COLORS[mbti]) || { bg: '#7B5FE0', accent: '#7B5FE0', label: '#fff' };
+  const pos = window.MBTI_POSITIONS[mbti] || window.MBTI_POSITIONS.INFP;
+  const preset = window.REPORT_PRESETS && window.REPORT_PRESETS[`${mbti}__${platform}`];
+  const directions = preset ? preset.directions : window.directionsFor(mbti);
+  const plat = window.PLATFORM_TIPS[platform] || window.PLATFORM_TIPS['小红书'];
+  const tmpl = preset ? preset.template : window.NEXT_CONTENT_TEMPLATE(mbti, platform);
+  const creatorTag = preset ? preset.creatorType : pos.tag;
+  const heroText = preset ? preset.heroSub : pos.hero;
+  const conclusion = preset ? preset.conclusion : pos.line;
+  const platformTips = preset ? preset.platformTips : plat.tips;
 
   return (
     <div style={{
@@ -508,9 +523,13 @@ function SampleSheet({ open, onClose }) {
       <div onClick={(e) => e.stopPropagation()} className={closing ? '' : 'sheet-enter'}
         style={{
           width:'100%', maxHeight:'90%', overflow:'auto',
-          background:'linear-gradient(180deg, #FFE5EE 0%, #FFC8DD 100%)',
+          background:'linear-gradient(180deg, #FFFFFF 0%, #F5F2FF 100%)',
           borderRadius:'24px 24px 0 0', position:'relative',
-          borderTop:'2px solid var(--ink)',
+          borderTop:'1px solid rgba(26,21,48,0.08)',
+          '--pink': mbtiColor.accent,
+          '--pink-deep': mbtiColor.accent,
+          '--pink-soft': mbtiColor.bg,
+          '--pink-faint': mbtiColor.bg + 'aa',
         }}>
         <div style={{display:'flex', justifyContent:'center', paddingTop:10}}>
           <div style={{width:42, height:4, borderRadius:999, background:'rgba(42,10,31,0.2)'}}/>
@@ -526,106 +545,78 @@ function SampleSheet({ open, onClose }) {
           </svg>
         </button>
 
-        <div style={{padding:'16px 18px 80px', display:'flex', flexDirection:'column', gap:12, position:'relative'}}>
-          <FourStar size={16} color="#9B6FE8" style={{position:'absolute', top:20, left:20, transform:'rotate(15deg)'}}/>
-
-          <div style={{
-            display:'inline-flex', alignSelf:'flex-start', alignItems:'center', gap:6,
-            padding:'4px 10px', borderRadius:999,
-            background:'var(--ink)', color:'#FFD93D',
-            fontSize:10.5, fontWeight:800, letterSpacing:'0.06em',
-          }}>SAMPLE · INTJ × 小红书</div>
-
-          {/* Hero */}
-          <div style={{
-            padding:'18px 18px 12px', borderRadius:22, position:'relative', overflow:'hidden',
-            background:'var(--pink)', color:'#fff',
-            border:'2px solid var(--ink)',
-            boxShadow:'4px 5px 0 var(--ink)',
-          }}>
-            <FourStar size={18} color="#FFD93D" style={{position:'absolute', top:14, right:18, transform:'rotate(15deg)'}}/>
-
-            <div style={{fontSize:10.5, color:'#FFD93D', fontWeight:800, letterSpacing:'0.18em', textTransform:'uppercase'}}>
-              ✦ Your creator persona
-            </div>
-            <h2 className="display-cn" style={{margin:'6px 0 0', fontSize:22, color:'#fff', letterSpacing:'-0.02em', lineHeight:1.25, maxWidth:220}}>
-              给那些觉得大多数视频<br/>都很无脑的 INTJ
-            </h2>
+        <div style={{padding:'18px 18px 80px', position:'relative'}}>
+          <section className="markdown-chat" style={{borderRadius:20}}>
             <div style={{
-              display:'inline-block', marginTop:14, padding:'6px 12px', borderRadius:999,
-              background:'var(--ink)', color:'#FFD93D', fontWeight:800, fontSize:11.5,
-            }}>定位 · 灵感架构师</div>
-            <div style={{position:'absolute', right:-10, bottom:-6}} className="float">
-              <Mascot size={108} />
-            </div>
-          </div>
+              position:'relative', overflow:'hidden',
+              padding:'24px 20px 20px',
+              background: `linear-gradient(145deg, ${mbtiColor.bg} 0%, #ffffff 72%)`,
+              minHeight: 210,
+            }}>
+              <FourStar size={20} color={mbtiColor.accent} style={{position:'absolute', top:18, right:18, transform:'rotate(15deg)', opacity:0.5}}/>
+              <Sparkle size={14} color={mbtiColor.accent} style={{position:'absolute', top:46, right:48, transform:'rotate(-15deg)', opacity:0.4}}/>
+              <Heart size={12} color={mbtiColor.accent} style={{position:'absolute', top:172, left:136, opacity:0.25}}/>
 
-          <Module title="一句话结论" badge="01" badgeColor="var(--pink)">
-            <div style={{fontSize:14, color:'var(--ink-2)', lineHeight:1.75, fontWeight:500}}>
-              你并不想对着镜头大喊大叫，也不想跳那些像被电击一样的热门舞蹈。<br/>
-              你的手机镜头不是用来「自拍」的，它是你的显微镜和手术刀。
-            </div>
-          </Module>
-
-          <Module title="核心定位" badge="02" badgeColor="var(--purple)">
-            <div style={{fontSize:14, color:'var(--ink-2)', lineHeight:1.75, fontWeight:500}}>
-              INTJ 在小红书最适合做<br/>
-              <strong style={{color:'var(--ink)'}}>「结构化洞察 + 决策模型输出者」</strong>
-              <br/><br/>
-              你不是来陪聊的，也不是来表演人格魅力的。
-              你是来把复杂问题拆清楚，让人「看完少走弯路」。
-            </div>
-          </Module>
-
-          <Module title="INTJ 在小红书的核心优势" badge="03" badgeColor="var(--yellow)" darkBadgeText>
-            <div style={{display:'flex', flexDirection:'column', gap:10}}>
-              <div style={{padding:'12px', borderRadius:12, background:'var(--pink-faint)', border:'1px solid var(--border)'}}>
-                <div style={{fontWeight:900, fontSize:14, color:'var(--ink)'}}>1. 你的美学 · 冷峻几何</div>
-                <div style={{fontSize:12.5, color:'var(--ink-2)', marginTop:6, lineHeight:1.65, fontWeight:500}}>
-                  你的视频需要像你的思维一样：干净、锐利、结构化。
+              <div style={{position:'relative', zIndex:2, maxWidth:195}}>
+                <div style={{fontSize:10.5, fontWeight:800, color:mbtiColor.accent, letterSpacing:'0.18em', textTransform:'uppercase'}}>
+                  ✦ Your creator persona
                 </div>
-                <ul style={{margin:'6px 0 0', paddingLeft:18, fontSize:12.5, color:'var(--ink-2)', lineHeight:1.7, fontWeight:500}}>
-                  <li><strong>构图：</strong>对称构图，用网格线确保水平</li>
-                  <li><strong>色调：</strong>低饱和度高对比，黑白灰 + 冷蓝</li>
-                  <li><strong>声音：</strong>打字机、快门、电流等声音</li>
-                </ul>
-              </div>
-              <div style={{padding:'12px', borderRadius:12, background:'var(--cream)', border:'1px solid var(--border)'}}>
-                <div style={{fontWeight:900, fontSize:14, color:'var(--ink)'}}>2. 看清本质，而不是表象</div>
-                <div style={{fontSize:12.5, color:'var(--ink-2)', marginTop:6, lineHeight:1.65, fontWeight:500}}>
-                  INTJ 的强项不是信息量，而是：抽象能力、模型化思维、因果链路。
+                <h1 style={{margin:'4px 0 0', fontSize:19, fontWeight:900, color:mbtiColor.label, letterSpacing:'-0.02em', lineHeight:1.15}}>
+                  {preset ? '你的内容主场' : '你的创作人格'}
+                </h1>
+                <div style={{
+                  fontSize:64, fontWeight:900, letterSpacing:'0.04em',
+                  color:mbtiColor.label, lineHeight:0.92, marginTop:4, marginBottom:8,
+                  fontFamily:'-apple-system, SF Pro Display, system-ui',
+                }}>{mbti}</div>
+                <div style={{fontSize:13, color:mbtiColor.label, fontWeight:600, marginTop:6, marginBottom:14, lineHeight:1.5, opacity:0.85}}>
+                  {heroText}
+                </div>
+                <div style={{
+                  display:'inline-flex', alignItems:'center', gap:6,
+                  padding:'7px 14px', borderRadius:999,
+                  background:mbtiColor.accent, color:'#fff',
+                  fontWeight:800, fontSize:12, letterSpacing:'0.02em',
+                }}>
+                  <Sparkle size={11} color="rgba(255,255,255,0.85)"/>
+                  定位 · {creatorTag}
                 </div>
               </div>
+              <div style={{position:'absolute', right:-10, bottom:-8, zIndex:3}}>
+                <Mascot size={172} mbti={mbti} style={{filter:`drop-shadow(0 12px 26px ${mbtiColor.accent}38)`}} />
+              </div>
             </div>
-          </Module>
 
-          <Module title="最适合 INTJ 的内容方向" badge="04" badgeColor="var(--mint)" darkBadgeText>
-            <div style={{padding:'12px', borderRadius:12, background:'var(--cream)', border:'1px solid var(--border)'}}>
-              <div style={{display:'flex', alignItems:'center', gap:8}}>
-                <span style={{padding:'2px 8px', borderRadius:6, background:'var(--ink)', color:'#fff', fontSize:10.5, fontWeight:800}}>方向 01</span>
-                <span style={{fontWeight:900, fontSize:14, color:'var(--ink)'}}>决策分析型</span>
-              </div>
-              <div style={{fontSize:12.5, color:'var(--ink-2)', marginTop:8, lineHeight:1.65, fontWeight:500}}>
-                <Row label="内容核心" v="帮别人想清楚「要不要做 / 值不值得」"/>
-                <div style={{marginTop:6}}>
-                  <span style={{color:'var(--ink-mute)', fontWeight:700}}>示例选题 · </span>
-                  <div style={{marginTop:4, paddingLeft:8}}>
-                    · 这件事适不适合普通人？我拆给你看<br/>
-                    · 为什么很多人选了 A，后来后悔<br/>
-                    · 你以为是努力问题，其实是路径问题
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Module>
+            <MarkdownReport
+              mbti={mbti}
+              platform={platform}
+              creatorTag={creatorTag}
+              conclusion={conclusion}
+              preset={preset}
+              pos={pos}
+              directions={directions}
+              platformTips={platformTips}
+              tmpl={tmpl}
+              onRestart={close}
+              onShare={() => showToast('已生成分享图 ✨')}
+            />
+          </section>
 
           <div style={{
-            padding:'12px', borderRadius:12, background:'rgba(42,10,31,0.04)',
-            textAlign:'center', fontSize:11.5, color:'var(--ink-3)', fontWeight:600,
+            marginTop:12, padding:'10px 12px', borderRadius:12, background:'rgba(26,21,48,0.05)',
+            textAlign:'center', fontSize:11.5, color:'var(--ink-3)', fontWeight:700,
           }}>
-            ↑ 这是示例报告 · 你的报告会根据 MBTI 实时生成
+            这是示例报告 · 你的报告会根据 MBTI 和平台实时生成
           </div>
         </div>
+
+        {toast && (
+          <div style={{
+            position:'absolute', left:'50%', bottom:22, transform:'translateX(-50%)',
+            padding:'10px 18px', borderRadius:999, background:'var(--ink)',
+            color:'#FFD93D', fontSize:13, fontWeight:800, zIndex:30,
+          }} className="scale-in">{toast}</div>
+        )}
       </div>
     </div>
   );
